@@ -1,0 +1,110 @@
+[
+    {
+        "numero": 1,
+        "tipo": "Desktop",
+        "serial": "xxxxxxx",
+        "marca": "Lenovo",
+        "modelo": "Yoga 7i",
+        "comentario": "adasdasdasdasdasd",
+        "procesador": "i5 9",
+        "almacenamiento": "500 GB",
+        "ram": "",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 2,
+        "tipo": "Desktop",
+        "serial": "xxxxxxx",
+        "marca": "Lenovo",
+        "modelo": "IdeaPad 3",
+        "comentario": "sss",
+        "procesador": "3333",
+        "almacenamiento": "750 GB",
+        "ram": "4 GB",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 3,
+        "tipo": "Desktop",
+        "serial": "xxxxxxx",
+        "marca": "Lenovo",
+        "modelo": "IdeaPad 3",
+        "comentario": "sdfdf",
+        "procesador": "sss",
+        "almacenamiento": "500 GB",
+        "ram": "4 GB",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 4,
+        "tipo": "All in One",
+        "serial": "asdasd",
+        "marca": "Lenovo",
+        "modelo": "ThinkPad X1",
+        "comentario": "sss",
+        "procesador": "sss",
+        "almacenamiento": "500 GB",
+        "ram": "4 GB",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 5,
+        "tipo": "Desktop",
+        "serial": "jj",
+        "marca": "hp",
+        "modelo": "ThinkPad X1",
+        "comentario": "",
+        "procesador": "i5 9",
+        "almacenamiento": "750 GB",
+        "ram": "4 GB",
+        "codigo": ""
+    },
+    {
+        "numero": 6,
+        "tipo": "All in One",
+        "serial": "hjg",
+        "marca": "Asus",
+        "modelo": "IdeaPad 3",
+        "comentario": "tiene un espapapapapa",
+        "procesador": "i3 88888",
+        "almacenamiento": "120 GB",
+        "ram": "4 GB",
+        "codigo": ""
+    },
+    {
+        "numero": 7,
+        "tipo": "All in One",
+        "serial": "aazazzzzz",
+        "marca": "Acer",
+        "modelo": "IdeaPad 3",
+        "comentario": "tiene un espapapapapa",
+        "procesador": "i3 88888",
+        "almacenamiento": "750 GB",
+        "ram": "32 GB",
+        "codigo": ""
+    },
+    {
+        "tipo": "Desktop",
+        "serial": "sadasd",
+        "marca": "asdasdas",
+        "modelo": "asdasdas",
+        "comentario": "sadasdasd",
+        "procesador": "sadasdas",
+        "almacenamiento": "dasdasd",
+        "ram": "sadsadsa",
+        "codigo": "asdsadasda",
+        "numero": 8
+    },
+    {
+        "tipo": "Desktop",
+        "serial": "11111",
+        "marca": "Lenovo",
+        "modelo": "IdeaPad 3",
+        "comentario": "231",
+        "procesador": "i5 de 9",
+        "almacenamiento": "750 GB",
+        "ram": "32 GB",
+        "codigo": "",
+        "numero": 9
+    }
+]

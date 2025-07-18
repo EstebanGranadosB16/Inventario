@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario de Equipos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+      <img src="https://s3.amazonaws.com/blab-impact-published-production/jUes7SjKK5W76xyP9y2fuzkSpLVSOezp" alt="" height="170px">
+      <a href="#"><box-icon name='package'></box-icon> Inventario</a>
+      <a href="#">📊 Reportes</a>
+      <a href="#">⚙️ Configuración</a>
+      <a href="#">👥 Usuarios</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="content">
+      <h2>Gestión de existencias</h2>
+
+      <!-- Gráfica -->
+      <div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total de Equipos</h5>
+        <p class="card-text fs-3">{{ total_equipos }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-white bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Top Marca</h5>
+        <p class="card-text fs-5">
+          {% set top_marca = conteo_marcas | dictsort(true, by='value') | first %}
+          {{ top_marca[0] }}: {{ top_marca[1] }} equipos
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-white bg-warning mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Equipos con Comentarios</h5>
+        <p class="card-text fs-3">{{ equipos_con_comentarios|length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-white bg-info mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Últimos Registrados</h5>
+        <ul class="list-unstyled">
+          {% for eq in ultimos_registrados %}
+            <li class="small">#{{ eq.numero }} - {{ eq.marca }} {{ eq.modelo }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- Botón Agregar + Búsqueda -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+              + Agregar un nuevo equipo 
+          </button>
+          <input class="form-control w-25" type="search" id="busqueda" placeholder="Buscar..." onkeyup="filtrarTabla()">
+      </div>
+      <div class="row g-2 mb-3">
+
+
+        <div class="col-md-3">
+        <select id="filtroTipo" class="form-select">
+            <option value="">Todos los tipos</option>
+            <option value="Desktop">Desktop</option>
+            <option value="All in One">All in One</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select id="filtroMarca" class="form-select">
+            <option value="">Todas las marcas</option>
+            <option value="HP">HP</option>
+            <option value="Lenovo">Lenovo</option>
+            <option value="Dell">Dell</option>
+            <option value="Asus">Asus</option>
+            <option value="Acer">Acer</option>
+            <option value="Apple">Apple</option>
+            <option value="MSI">MSI</option>
+        </select>
+    </div>
+    
+    <div class="col-md-3">
+        <select id="filtroRAM" class="form-select">
+            <option value="">Toda la RAM</option>
+            <option value="4 GB">4 GB</option>
+            <option value="8 GB">8 GB</option>
+            <option value="12 GB">12 GB</option>
+            <option value="16 GB">16 GB</option>
+            <option value="32 GB">32 GB</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select id="filtroAlmacenamiento" class="form-select">
+            <option value="">Todo el almacenamiento</option>
+            <option value="128 GB">128 GB</option>
+            <option value="256 GB">256 GB</option>
+            <option value="500 GB">500 GB</option>
+            <option value="750 GB">750 GB</option>
+            <option value="1 TB">1 TB</option>
+            <option value="2 TB">2 TB</option>
+        </select>
+    </div>
+</div>
+
+
+      <!-- Tabla de Equipos -->
+      <table class="table table-striped" id="tabla-equipos">
+          <thead>
+            <tr>
+              <th>#</th><th>Tipo</th><th>Serial</th><th>Marca</th><th>Modelo</th><th>Comentario</th>
+              <th>Procesador</th><th>Almacenamiento</th><th>RAM</th><th>Código</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for equipo in equipos %}
+            <tr>
+              <td>{{ equipo.numero }}</td>
+              <td>{{ equipo.tipo }}</td>
+              <td>{{ equipo.serial }}</td>
+              <td>{{ equipo.marca }}</td>
+              <td>{{ equipo.modelo }}</td>
+              <td>{{ equipo.comentario }}</td>
+              <td>{{ equipo.procesador }}</td>
+              <td>{{ equipo.almacenamiento }}</td>
+              <td>{{ equipo.ram }}</td>
+              <td>{{ equipo.codigo }}</td>
+              <td>
+                <button class="btn btn-sm btn-warning mb-1" onclick='abrirModal({{ equipo | tojson | safe }})'>Editar</button>
+                <form action="/eliminar/{{ equipo.numero }}" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este equipo?');">
+                  <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+  </div>
+
+  <!-- Aquí van los modales -->
+  {% include 'modales.html' %}
+
+  <!-- Alertas con SweetAlert -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  Swal.fire({
+                      icon: '{{ 'success' if category == 'success' else 'error' }}',
+                      title: '{{ 'Éxito' if category == 'success' else 'Error' }}',
+                      text: '{{ message }}',
+                      timer: 3000,
+                      timerProgressBar: true,
+                      showConfirmButton: false
+                  });
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+  });
+  </script>
+
+  <!-- Filtro y modal edición -->
+  <script>
+  function filtrarTabla() {
+      let filtro = document.getElementById("busqueda").value.toLowerCase();
+      let filas = document.querySelectorAll("#tabla-equipos tbody tr");
+      filas.forEach(fila => {
+          let texto = fila.innerText.toLowerCase();
+          fila.style.display = texto.includes(filtro) ? "" : "none";
+      });
+  }
+
+  function abrirModal(equipo) {
+      document.getElementById('edit-numero').value = equipo.numero;
+      document.getElementById('edit-tipo').value = equipo.tipo;
+      document.getElementById('edit-serial').value = equipo.serial;
+      document.getElementById('edit-marca').value = equipo.marca;
+      document.getElementById('edit-modelo').value = equipo.modelo;
+      document.getElementById('edit-comentario').value = equipo.comentario;
+      document.getElementById('edit-procesador').value = equipo.procesador;
+      document.getElementById('edit-almacenamiento').value = equipo.almacenamiento;
+      document.getElementById('edit-ram').value = equipo.ram;
+      document.getElementById('edit-codigo').value = equipo.codigo;
+      document.getElementById('form-editar').action = '/editar/' + equipo.numero;
+      new bootstrap.Modal(document.getElementById('modal-editar')).show();
+  }
+
+  function cerrarModal() {
+      let modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
+      if (modal) modal.hide();
+  }
+  </script>
+
+  <!-- Chart.js: Gráfica por tipo -->
+  <script>
+  const ctx = document.getElementById('graficaTipos').getContext('2d');
+  const graficaTipos = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: {{ conteo_tipos.keys() | list | tojson }},
+          datasets: [{
+              label: 'Cantidad de Equipos',
+              data: {{ conteo_tipos.values() | list | tojson }},
+              backgroundColor: ['#007bff', '#ffc107'],
+              borderColor: ['#0056b3', '#e0a800'],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+  </script>
+
+
+<script>
+function aplicarFiltros() {
+    const marca = document.getElementById("filtroMarca").value.toLowerCase();
+    const tipo = document.getElementById("filtroTipo").value.toLowerCase();
+    const ram = document.getElementById("filtroRAM").value.toLowerCase();
+    const almacenamiento = document.getElementById("filtroAlmacenamiento").value.toLowerCase();
+
+    const filas = document.querySelectorAll("#tabla-equipos tbody tr");
+
+    filas.forEach(fila => {
+        const textoFila = fila.innerText.toLowerCase();
+        const coincide = 
+            (marca === "" || textoFila.includes(marca)) &&
+            (tipo === "" || textoFila.includes(tipo)) &&
+            (ram === "" || textoFila.includes(ram)) &&
+            (almacenamiento === "" || textoFila.includes(almacenamiento));
+
+        fila.style.display = coincide ? "" : "none";
+    });
+}
+
+// Detectar cambios
+["filtroMarca", "filtroTipo", "filtroRAM", "filtroAlmacenamiento"].forEach(id => {
+    document.getElementById(id).addEventListener("change", aplicarFiltros);
+});
+</script>
+
+</body>
+</html>

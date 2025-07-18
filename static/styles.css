@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #f5f5f5;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding-top: 30px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sidebar a:hover {
+    background-color: #e9ecef;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 30px;
+    flex: 1;
+    background-color: #f5f5f5;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.row.mb-4 .card {
+    min-height: 140px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.row.mb-4 .card .card-title {
+    font-size: 1rem;
+}
+
+.row.mb-4 .card .card-text {
+    font-weight: bold;
+}
+
+.row.mb-4 ul {
+    margin-bottom: 0;
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+table {
+    background-color: white;
+}
+
+th {
+    background-color: #d80d0d;
+    color: white;
+    text-align: center;
+}
+
+td {
+    text-align: center;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+.modal .form-control,
+.modal .form-select {
+    margin-bottom: 10px;
+}
+
+
+.row.g-2.mb-3 select.form-select {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+}

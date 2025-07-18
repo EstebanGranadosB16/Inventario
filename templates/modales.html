@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #f5f5f5;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding-top: 30px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sidebar a:hover {
+    background-color: #e9ecef;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 30px;
+    flex: 1;
+    background-color: #f5f5f5;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+table {
+    background-color: white;
+}
+
+th {
+    background-color: #d80d0d;
+    color: white;
+    text-align: center;
+}
+
+td {
+    text-align: center;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+.modal .form-control,
+.modal .form-select {
+    margin-bottom: 10px;
+}
+
+    </style>
+<body>
+    <!-- Modal Agregar Equipo -->
+<div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form action="/agregar" method="POST" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarLabel">Agregar Nuevo Equipo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body row g-3">
+        <div class="col-md-4">
+            <label class="form-label">Tipo</label>
+            <select name="tipo" class="form-select" required>
+                <option value="">Tipo...</option>
+                <option value="Desktop">Desktop</option>
+                <option value="All in One">All in One</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Serial</label>
+            <input type="text" name="serial" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Marca</label>
+            <input type="text" name="marca" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Modelo</label>
+            <input type="text" name="modelo" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Comentario</label>
+            <input type="text" name="comentario" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Procesador</label>
+            <input type="text" name="procesador" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Almacenamiento</label>
+            <input type="text" name="almacenamiento" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">RAM</label>
+            <input type="text" name="ram" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Código</label>
+            <input type="text" name="codigo" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-success">Guardar Equipo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Editar Equipo -->
+<div id="modal-editar" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="form-editar" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Equipo</h5>
+          <button type="button" class="btn-close" onclick="cerrarModal()"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <input type="hidden" id="edit-numero" name="numero">
+          <div class="col-md-4">
+              <label>Tipo</label>
+              <select name="tipo" id="edit-tipo" class="form-select" required>
+                  <option value="Desktop">Desktop</option>
+                  <option value="All in One">All in One</option>
+              </select>
+          </div>
+          <div class="col-md-4">
+              <label>Serial</label>
+              <input type="text" name="serial" id="edit-serial" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+              <label>Marca</label>
+              <input type="text" name="marca" id="edit-marca" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+              <label>Modelo</label>
+              <input type="text" name="modelo" id="edit-modelo" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+              <label>Comentario</label>
+              <input type="text" name="comentario" id="edit-comentario" class="form-control">
+          </div>
+          <div class="col-md-4">
+              <label>Procesador</label>
+              <input type="text" name="procesador" id="edit-procesador" class="form-control">
+          </div>
+          <div class="col-md-4">
+              <label>Almacenamiento</label>
+              <input type="text" name="almacenamiento" id="edit-almacenamiento" class="form-control">
+          </div>
+          <div class="col-md-4">
+              <label>RAM</label>
+              <input type="text" name="ram" id="edit-ram" class="form-control">
+          </div>
+          <div class="col-md-4">
+              <label>Código</label>
+              <input type="text" name="codigo" id="edit-codigo" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
+          <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
