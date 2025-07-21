@@ -106,5 +106,41 @@
         "ram": "32 GB",
         "codigo": "",
         "numero": 9
+    },
+    {
+        "tipo": "All in One",
+        "serial": "xxxxx-x-xxx-x-xxxx",
+        "marca": "Lenovo",
+        "modelo": "Yoga 7i",
+        "comentario": "tiene un espapapapapa",
+        "procesador": "i5 9",
+        "almacenamiento": "500 GB",
+        "ram": "32 GB",
+        "codigo": "",
+        "numero": 10
+    },
+    {
+        "numero": 11,
+        "tipo": "Desktop",
+        "serial": "asdasd",
+        "marca": "Lenovo",
+        "modelo": "Yoga 7i",
+        "comentario": "sss",
+        "procesador": "i5 de novena generacion",
+        "almacenamiento": "750 GB",
+        "ram": "4 GB",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 12,
+        "tipo": "Desktop",
+        "serial": "asdasd",
+        "marca": "Lenovo",
+        "modelo": "Yoga 7i",
+        "comentario": "sss",
+        "procesador": "3333",
+        "almacenamiento": "500 GB",
+        "ram": "16 GB",
+        "codigo": "soooooooooo"
     }
 ]

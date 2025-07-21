@@ -15,6 +15,19 @@
   <div class="sidebar">
       <img src="https://s3.amazonaws.com/blab-impact-published-production/jUes7SjKK5W76xyP9y2fuzkSpLVSOezp" alt="" height="170px">
       <a href="#"><box-icon name='package'></box-icon> Inventario</a>
+
+      <div class="mt-4 px-3">
+  <h6 class="text-muted">Módulos</h6>
+  {% for modulo in modulos_disponibles %}
+      <a class="d-block ms-2 {% if modulo == modulo_actual %}fw-bold text-primary{% endif %}" 
+         href="{{ url_for('ver_modulo', modulo=modulo) }}">
+          📁 {{ modulo }}
+      </a>
+  {% else %}
+      <span class="text-muted ms-2">Sin módulos</span>
+  {% endfor %}
+</div>
+
       <a href="#">📊 Reportes</a>
       <a href="#">⚙️ Configuración</a>
       <a href="#">👥 Usuarios</a>
@@ -35,18 +48,7 @@
     </div>
   </div>
 
-  <div class="col-md-3">
-    <div class="card text-white bg-success mb-3">
-      <div class="card-body">
-        <h5 class="card-title">Top Marca</h5>
-        <p class="card-text fs-5">
-          {% set top_marca = conteo_marcas | dictsort(true, by='value') | first %}
-          {{ top_marca[0] }}: {{ top_marca[1] }} equipos
-        </p>
-      </div>
-    </div>
-  </div>
-
+  
   <div class="col-md-3">
     <div class="card text-white bg-warning mb-3">
       <div class="card-body">
