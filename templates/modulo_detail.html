@@ -1,549 +1,257 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <title>Document</title>
-</head>
-<body>
-   {% extends 'base.html' %} {# Asegúrate de tener un base.html #}
+{% extends "base.html" %}
+
+{% block title %}Módulo: {{ modulo.nombre }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    
-        <box-icon name='arrow-back' color='#ffffff' size="18px"></box-icon> Volver a Módulos
-    </a>
-    <h2 class="mb-4">Módulo: {{ modulo_actual }}</h2>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    {# Contenedor superior: Botón Agregar, Buscar y Filtros #}
-    <div class=""> {# Encierra todo el contenido superior en una sola tarjeta #}
-        <div class="card-body1">
-            {# Columna para el Resumen del Módulo (ej. 4 columnas de ancho en escritorio) #}
-<div class="card-body2">
-    <div class="card h-100"> {# h-100 para que ocupe toda la altura disponible en su columna #}
-        <div class="card-header">
-            <h5 class="card-title">Resumen del Módulo</h5> {# Aquí se aplicarán los estilos del h5 dentro del card-header #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            {# Botón para volver a la sección de crear módulos / ver lista de módulos #}
+            <a href="{{ url_for('crear_modulo') }}" class="btn btn-secondary me-3"> {# Apunta a la ruta que muestra el formulario y la lista de módulos #}
+                <i class="bi bi-arrow-left-circle-fill me-2"></i> Volver a Módulos
+            </a>
+            <h2>Módulo: {{ modulo.nombre }}</h2>
         </div>
-        <div class="Resumen_equipos"> {# AÑADE ESTA CLASE AQUÍ #}
-            <p>Total de equipos: <strong>{{ total_equipos }}</strong></p>
-            <h6>Conteo por Tipo:</h6>
-            <ul>
-                {% for tipo, count in conteo_tipos.items() %}
-                    <li>{{ tipo }}: {{ count }}</li>
-                {% else %}
-                    <li>Sin tipos registrados.</li>
-                {% endfor %}
-            </ul>
-            <h6>Conteo por Marca:</h6>
-            <ul>
-                {% for marca, count in conteo_marcas.items() %}
-                    <li>{{ marca }}: {{ count }}</li>
-                {% else %}
-                    <li>Sin marcas registradas.</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-</div>
-            <div class="row align-items-center mb-3"> {# Fila para el botón y la búsqueda/filtros #}
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
-                        <i class="bi bi-plus-circle-fill me-2"></i> Agregar un nuevo equipo
-                    </button>
-                </div>
-                <div class="col-md-8">
-                    <div class="row g-2">
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
-                        </div>
-                        <div class="col-sm-2">
-                            <select class="form-select" id="tipoFilter">
-                                <option value="Todos los tipos" selected>Tipos</option>
-                                {% for tipo in tipos_disponibles %}
-                                    <option value="{{ tipo }}">{{ tipo }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <select class="form-select" id="marcaFilter">
-                                <option value="Todas las marcas" selected>marcas</option>
-                                {% for marca in marcas_disponibles %}
-                                    <option value="{{ marca }}">{{ marca }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <select class="form-select" id="ramFilter">
-                                <option value="Toda la RAM" selected>RAM</option>
-                                {% for ram in rams_disponibles %}
-                                    <option value="{{ ram }}">{{ ram }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <select class="form-select" id="almacenamientoFilter">
-                                <option value="Todo el almacenamiento" selected>almacenamiento</option>
-                                {% for alm in almacenamientos_disponibles %}
-                                    <option value="{{ alm }}">{{ alm }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div>
+            {% if current_user.rol == 'admin' or current_user.id == modulo.usuario_id %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModuloModal">
+                    Eliminar Módulo <i class="bi bi-trash-fill"></i>
+                </button>
+            {% endif %}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarEquipoModal">
+                Agregar Equipo <i class="bi bi-plus-circle-fill"></i>
+            </button>
         </div>
     </div>
 
-    <hr> {# La línea divisoria puede ir aquí para separar la sección superior de las inferiores #}
-
-    {# Contenedores inferiores: Resumen y Tabla de Equipos #}
-    <div class="row">
-        {# Columna para el Resumen del Módulo (ej. 4 columnas de ancho en escritorio) #}
-      
-
-        {# Columna para la Tabla de Equipos (ej. 8 columnas de ancho en escritorio) #}
-        <div class="col-md-8 mb-4">
-            <div class="card h-100"> {# h-100 para que ocupe toda la altura disponible en su columna #}
-                <div class="card-header">
-                    <h3>Equipos en este Módulo</h3>
-                </div>
+    {# Contenido existente de modulo_detail.html para mostrar equipos y estadísticas #}
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm h-100">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tipo</th>
-                                    <th>Serial</th>
-                                    <th>Marca</th>
-                                    <th>Modelo</th>
-                                    <th>Comentario</th>
-                                    <th>Procesador</th>
-                                    <th>Almacenamiento</th>
-                                    <th>RAM</th>
-                                    <th>Código</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {# El contenido del tbody se llenará con JavaScript #}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="noResultsMessage" class="alert alert-info text-center" style="display:none;">
-                        No hay equipos registrados en este módulo o no coinciden con los filtros.
-                    </div>
+                    <h5 class="card-title">Total de Equipos</h5>
+                    <p class="card-text display-4">{{ total_equipos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Tipos de Equipo</h5>
+                    <ul class="list-group list-group-flush text-start">
+                        {% for tipo, count in conteo_tipos.items() %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ tipo }}
+                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">No hay tipos definidos.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Marcas</h5>
+                    <ul class="list-group list-group-flush text-start">
+                        {% for marca, count in conteo_marcas.items() %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ marca }}
+                                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">No hay marcas definidas.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    {# MODAL PARA AGREGAR NUEVO EQUIPO #}
-    <div class="modal fade" id="addEquipoModal" tabindex="-1" aria-labelledby="addEquipoModalLabel" aria-hidden="true">
+    <h3 class="mt-4 mb-3">Equipos en este Módulo</h3>
+    {% if equipos %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Serial</th>
+                    <th scope="col">Procesador</th>
+                    <th scope="col">Almacenamiento</th>
+                    <th scope="col">RAM</th>
+                    <th scope="col">Comentario</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipo in equipos %}
+                <tr>
+                    <td>{{ equipo.codigo }}</td>
+                    <td>{{ equipo.tipo }}</td>
+                    <td>{{ equipo.marca }}</td>
+                    <td>{{ equipo.modelo }}</td>
+                    <td>{{ equipo.serial }}</td>
+                    <td>{{ equipo.procesador }}</td>
+                    <td>{{ equipo.almacenamiento }}</td>
+                    <td>{{ equipo.ram }}</td>
+                    <td>{{ equipo.comentario }}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editarEquipoModal-{{ equipo.id }}">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteEquipoModal-{{ equipo.id }}">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                {# Modal de Edición de Equipo #}
+                <div class="modal fade" id="editarEquipoModal-{{ equipo.id }}" tabindex="-1" aria-labelledby="editarEquipoModalLabel-{{ equipo.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title" id="editarEquipoModalLabel-{{ equipo.id }}">Editar Equipo: {{ equipo.codigo }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ url_for('editar_equipo', modulo_id=modulo.id, equipo_id=equipo.id) }}" method="POST">
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="tipo" class="form-label">Tipo</label>
+                                            <input type="text" class="form-control" id="tipo" name="tipo" value="{{ equipo.tipo }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="serial" class="form-label">Serial</label>
+                                            <input type="text" class="form-control" id="serial" name="serial" value="{{ equipo.serial }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="marca" class="form-label">Marca</label>
+                                            <input type="text" class="form-control" id="marca" name="marca" value="{{ equipo.marca }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="modelo" class="form-label">Modelo</label>
+                                            <input type="text" class="form-control" id="modelo" name="modelo" value="{{ equipo.modelo }}">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label for="comentario" class="form-label">Comentario</label>
+                                            <textarea class="form-control" id="comentario" name="comentario" rows="3">{{ equipo.comentario }}</textarea>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="procesador" class="form-label">Procesador</label>
+                                            <input type="text" class="form-control" id="procesador" name="procesador" value="{{ equipo.procesador }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="almacenamiento" class="form-label">Almacenamiento</label>
+                                            <input type="text" class="form-control" id="almacenamiento" name="almacenamiento" value="{{ equipo.almacenamiento }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="ram" class="form-label">RAM</label>
+                                            <input type="text" class="form-control" id="ram" name="ram" value="{{ equipo.ram }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="codigo" class="form-label">Código</label>
+                                            <input type="text" class="form-control" id="codigo" name="codigo" value="{{ equipo.codigo }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {# Modal de Confirmación para Eliminar Equipo #}
+                <div class="modal fade" id="confirmDeleteEquipoModal-{{ equipo.id }}" tabindex="-1" aria-labelledby="confirmDeleteEquipoModalLabel-{{ equipo.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="confirmDeleteEquipoModalLabel-{{ equipo.id }}">Confirmar Eliminación</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de que quieres eliminar el equipo <strong>{{ equipo.codigo }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form action="{{ url_for('eliminar_equipo', modulo_id=modulo.id, equipo_id=equipo.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Eliminar Equipo</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="text-muted">No hay equipos registrados en este módulo.</p>
+    {% endif %}
+
+    {# Modal para Agregar Equipo #}
+    <div class="modal fade" id="agregarEquipoModal" tabindex="-1" aria-labelledby="agregarEquipoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form action="{{ url_for('modulos.agregar_equipo_modulo', modulo=modulo_actual) }}" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addEquipoModalLabel">Agregar Nuevo Equipo a {{ modulo_actual }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="agregarEquipoModalLabel">Agregar Nuevo Equipo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('agregar_equipo', modulo_id=modulo.id) }}" method="POST">
                     <div class="modal-body">
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="tipo" class="form-label">Tipo</label>
-                                <select class="form-select" id="tipo" name="tipo" required>
-                                    <option value="">Selecciona un tipo</option>
-                                    <option value="Desktop">Desktop</option>
-                                    <option value="All-in-One">All-in-One</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
+                            <div class="col-md-6">
+                                <label for="new_tipo" class="form-label">Tipo</label>
+                                <input type="text" class="form-control" id="new_tipo" name="tipo" placeholder="Ej: Laptop, Monitor">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="new_serial" class="form-label">Serial</label>
+                                <input type="text" class="form-control" id="new_serial" name="serial">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="new_marca" class="form-label">Marca</label>
+                                <input type="text" class="form-control" id="new_marca" name="marca">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="new_modelo" class="form-label">Modelo</label>
+                                <input type="text" class="form-control" id="new_modelo" name="modelo">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="new_comentario" class="form-label">Comentario</label>
+                                <textarea class="form-control" id="new_comentario" name="comentario" rows="3"></textarea>
                             </div>
                             <div class="col-md-4">
-                                <label for="serial" class="form-label">Serial</label>
-                                <input type="text" class="form-control" id="serial" name="serial" required placeholder="Ej: ABC123DEF456">
+                                <label for="new_procesador" class="form-label">Procesador</label>
+                                <input type="text" class="form-control" id="new_procesador" name="procesador">
                             </div>
                             <div class="col-md-4">
-                                <label for="marca" class="form-label">Marca</label>
-                                <input type="text" class="form-control" id="marca" name="marca" placeholder="Ej: Dell">
+                                <label for="new_almacenamiento" class="form-label">Almacenamiento</label>
+                                <input type="text" class="form-control" id="new_almacenamiento" name="almacenamiento">
                             </div>
                             <div class="col-md-4">
-                                <label for="modelo" class="form-label">Modelo</label>
-                                <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Ej: OptiPlex 3080">
+                                <label for="new_ram" class="form-label">RAM</label>
+                                <input type="text" class="form-control" id="new_ram" name="ram">
                             </div>
-                            <div class="col-md-8">
-                                <label for="comentario" class="form-label">Comentario</label>
-                                <textarea class="form-control" id="comentario" name="comentario" rows="2" placeholder="Notas adicionales sobre el equipo..."></textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="procesador" class="form-label">Procesador</label>
-                                <select class="form-select" id="procesador" name="procesador">
-                                    <option value="">Selecciona un procesador</option>
-                                    <optgroup label="Intel">
-                                        <option value="Intel Core i3">Intel Core i3</option>
-                                        <option value="Intel Core i5">Intel Core i5</option>
-                                        <option value="Intel Core i7">Intel Core i7</option>
-                                        <option value="Intel Core i9">Intel Core i9</option>
-                                        <option value="Intel Xeon">Intel Xeon</option>
-                                        <option value="Intel Celeron">Intel Celeron</option>
-                                        <option value="Intel Pentium">Intel Pentium</option>
-                                    </optgroup>
-                                    <optgroup label="AMD">
-                                        <option value="AMD Ryzen 3">AMD Ryzen 3</option>
-                                        <option value="AMD Ryzen 5">AMD Ryzen 5</option>
-                                        <option value="AMD Ryzen 7">AMD Ryzen 7</option>
-                                        <option value="AMD Ryzen 9">AMD Ryzen 9</option>
-                                        <option value="AMD Threadripper">AMD Threadripper</option>
-                                        <option value="AMD Athlon">AMD Athlon</option>
-                                    </optgroup>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="generacion_procesador" class="form-label">Generación Procesador</label>
-                                <select class="form-select" id="generacion_procesador" name="generacion_procesador">
-                                    <option value="">Selecciona la generación</option>
-                                    {% for i in range(2, 16) %}
-                                        <option value="{{ i }}ª Gen">{{ i }}ª Gen</option>
-                                    {% endfor %}
-                                    <option value="Sin especificar">Sin especificar</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="almacenamiento" class="form-label">Almacenamiento</label>
-                                <select class="form-select" id="almacenamiento" name="almacenamiento">
-                                    <option value="">Selecciona almacenamiento</option>
-                                    <optgroup label="HDD">
-                                        <option value="HDD 500GB">HDD 500GB</option>
-                                        <option value="HDD 1TB">HDD 1TB</option>
-                                        <option value="HDD 2TB">HDD 2TB</option>
-                                        <option value="HDD 4TB+">HDD 4TB+</option>
-                                    </optgroup>
-                                    <optgroup label="SSD">
-                                        <option value="SSD 128GB">SSD 128GB</option>
-                                        <option value="SSD 256GB">SSD 256GB</option>
-                                        <option value="SSD 512GB">SSD 512GB</option>
-                                        <option value="SSD 1TB">SSD 1TB</option>
-                                        <option value="SSD 2TB+">SSD 2TB+</option>
-                                    </optgroup>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="ram" class="form-label">RAM</label>
-                                <select class="form-select" id="ram" name="ram">
-                                    <option value="">Selecciona RAM</option>
-                                    <option value="4GB">4GB</option>
-                                    <option value="8GB">8GB</option>
-                                    <option value="16GB">16GB</option>
-                                    <option value="32GB">32GB</option>
-                                    <option value="64GB+">64GB+</option>
-                                    <option value="Otro">Otro</option>
-                                    <option value="N/A">N/A</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="codigo" class="form-label">Código</label>
-                                <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Ej: ABC-XYZ-123">
+                            <div class="col-md-6">
+                                <label for="new_codigo" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="new_codigo" name="codigo" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Añadir Equipo</button>
+                        <button type="submit" class="btn btn-primary">Agregar Equipo</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    {# Modals de Edición #}
-    {% for equipo in equipos %}
-    <div class="modal fade" id="editEquipoModal{{ equipo.numero }}" tabindex="-1" aria-labelledby="editEquipoModalLabel{{ equipo.numero }}" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form action="{{ url_for('modulos.editar_equipo_modulo', modulo=modulo_actual, numero=equipo.numero) }}" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editEquipoModalLabel{{ equipo.numero }}">Editar Equipo #{{ equipo.numero }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class='bx bxs-edit'></i></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="editTipo{{ equipo.numero }}" class="form-label">Tipo</label>
-                                <select class="form-select" id="editTipo{{ equipo.numero }}" name="tipo">
-                                    <option value="">Selecciona un tipo</option>
-                                    <option value="Desktop" {% if equipo.get('tipo') == 'Desktop' %}selected{% endif %}>Desktop</option>
-                                    <option value="All-in-One" {% if equipo.get('tipo') == 'All-in-One' %}selected{% endif %}>All-in-One</option>
-                                    <option value="Otro" {% if equipo.get('tipo') == 'Otro' %}selected{% endif %}>Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editSerial{{ equipo.numero }}" class="form-label">Serial</label>
-                                <input type="text" class="form-control" id="editSerial{{ equipo.numero }}" name="serial" required value="{{ equipo.get('serial', '') }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editMarca{{ equipo.numero }}" class="form-label">Marca</label>
-                                <input type="text" class="form-control" id="editMarca{{ equipo.numero }}" name="marca" value="{{ equipo.get('marca', '') }}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editModelo{{ equipo.numero }}" class="form-label">Modelo</label>
-                                <input type="text" class="form-control" id="editModelo{{ equipo.numero }}" name="modelo" value="{{ equipo.get('modelo', '') }}">
-                            </div>
-                            <div class="col-md-8">
-                                <label for="editComentario{{ equipo.numero }}" class="form-label">Comentario</label>
-                                <textarea class="form-control" id="editComentario{{ equipo.numero }}" name="comentario" rows="2">{{ equipo.get('comentario', '') }}</textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editProcesador{{ equipo.numero }}" class="form-label">Procesador</label>
-                                <select class="form-select" id="editProcesador{{ equipo.numero }}" name="procesador">
-                                    <option value="">Selecciona un procesador</option>
-                                    <optgroup label="Intel">
-                                        <option value="Intel Core i3" {% if equipo.get('procesador') == 'Intel Core i3' %}selected{% endif %}>Intel Core i3</option>
-                                        <option value="Intel Core i5" {% if equipo.get('procesador') == 'Intel Core i5' %}selected{% endif %}>Intel Core i5</option>
-                                        <option value="Intel Core i7" {% if equipo.get('procesador') == 'Intel Core i7' %}selected{% endif %}>Intel Core i7</option>
-                                        <option value="Intel Core i9" {% if equipo.get('procesador') == 'Intel Core i9' %}selected{% endif %}>Intel Core i9</option>
-                                        <option value="Intel Xeon" {% if equipo.get('procesador') == 'Intel Xeon' %}selected{% endif %}>Intel Xeon</option>
-                                        <option value="Intel Celeron" {% if equipo.get('procesador') == 'Intel Celeron' %}selected{% endif %}>Intel Celeron</option>
-                                        <option value="Intel Pentium" {% if equipo.get('procesador') == 'Intel Pentium' %}selected{% endif %}>Intel Pentium</option>
-                                    </optgroup>
-                                    <optgroup label="AMD">
-                                        <option value="AMD Ryzen 3" {% if equipo.get('procesador') == 'AMD Ryzen 3' %}selected{% endif %}>AMD Ryzen 3</option>
-                                        <option value="AMD Ryzen 5" {% if equipo.get('procesador') == 'AMD Ryzen 5' %}selected{% endif %}>AMD Ryzen 5</option>
-                                        <option value="AMD Ryzen 7" {% if equipo.get('procesador') == 'AMD Ryzen 7' %}selected{% endif %}>AMD Ryzen 7</option>
-                                        <option value="AMD Ryzen 9" {% if equipo.get('procesador') == 'AMD Ryzen 9' %}selected{% endif %}>AMD Ryzen 9</option>
-                                        <option value="AMD Threadripper" {% if equipo.get('procesador') == 'AMD Threadripper' %}selected{% endif %}>AMD Threadripper</option>
-                                        <option value="AMD Athlon" {% if equipo.get('procesador') == 'AMD Athlon' %}selected{% endif %}>AMD Athlon</option>
-                                    </optgroup>
-                                    <option value="Otro" {% if equipo.get('procesador') == 'Otro' %}selected{% endif %}>Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editGeneracionProcesador{{ equipo.numero }}" class="form-label">Generación Procesador</label>
-                                <select class="form-select" id="editGeneracionProcesador{{ equipo.numero }}" name="generacion_procesador">
-                                    <option value="">Selecciona la generación</option>
-                                    {% for i in range(2, 16) %}
-                                        <option value="{{ i }}ª Gen" {% if equipo.get('generacion_procesador') == i ~ 'ª Gen' %}selected{% endif %}>{{ i }}ª Gen</option>
-                                    {% endfor %}
-                                    <option value="Sin especificar" {% if equipo.get('generacion_procesador') == 'Sin especificar' %}selected{% endif %}>Sin especificar</option>
-                                    <option value="Otro" {% if equipo.get('generacion_procesador') == 'Otro' %}selected{% endif %}>Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editAlmacenamiento{{ equipo.numero }}" class="form-label">Almacenamiento</label>
-                                <select class="form-select" id="editAlmacenamiento{{ equipo.numero }}" name="almacenamiento">
-                                    <option value="">Selecciona almacenamiento</option>
-                                    <optgroup label="HDD">
-                                        <option value="HDD 500GB" {% if equipo.get('almacenamiento') == 'HDD 500GB' %}selected{% endif %}>HDD 500GB</option>
-                                        <option value="HDD 1TB" {% if equipo.get('almacenamiento') == 'HDD 1TB' %}selected{% endif %}>HDD 1TB</option>
-                                        <option value="HDD 2TB" {% if equipo.get('almacenamiento') == 'HDD 2TB' %}selected{% endif %}>HDD 2TB</option>
-                                        <option value="HDD 4TB+" {% if equipo.get('almacenamiento') == 'HDD 4TB+' %}selected{% endif %}>HDD 4TB+</option>
-                                    </optgroup>
-                                    <optgroup label="SSD">
-                                        <option value="SSD 128GB" {% if equipo.get('almacenamiento') == 'SSD 128GB' %}selected{% endif %}>SSD 128GB</option>
-                                        <option value="SSD 256GB" {% if equipo.get('almacenamiento') == 'SSD 256GB' %}selected{% endif %}>SSD 256GB</option>
-                                        <option value="SSD 512GB" {% if equipo.get('almacenamiento') == 'SSD 512GB' %}selected{% endif %}>SSD 512GB</option>
-                                        <option value="SSD 1TB" {% if equipo.get('almacenamiento') == 'SSD 1TB' %}selected{% endif %}>SSD 1TB</option>
-                                        <option value="SSD 2TB+" {% if equipo.get('almacenamiento') == 'SSD 2TB+' %}selected{% endif %}>SSD 2TB+</option>
-                                    </optgroup>
-                                    <option value="Otro" {% if equipo.get('almacenamiento') == 'Otro' %}selected{% endif %}>Otro</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editRam{{ equipo.numero }}" class="form-label">RAM</label>
-                                <select class="form-select" id="editRam{{ equipo.numero }}" name="ram">
-                                    <option value="">Selecciona RAM</option>
-                                    <option value="4GB" {% if equipo.get('ram') == '4GB' %}selected{% endif %}>4GB</option>
-                                    <option value="8GB" {% if equipo.get('ram') == '8GB' %}selected{% endif %}>8GB</option>
-                                    <option value="16GB" {% if equipo.get('ram') == '16GB' %}selected{% endif %}>16GB</option>
-                                    <option value="32GB" {% if equipo.get('ram') == '32GB' %}selected{% endif %}>32GB</option>
-                                    <option value="64GB+" {% if equipo.get('ram') == '64GB+' %}selected{% endif %}>64GB+</option>
-                                    <option value="Otro" {% if equipo.get('ram') == 'Otro' %}selected{% endif %}>Otro</option>
-                                    <option value="N/A" {% if equipo.get('ram') == 'N/A' %}selected{% endif %}>N/A</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="editCodigo{{ equipo.numero }}" class="form-label">Código</label>
-                                <input type="text" class="form-control" id="editCodigo{{ equipo.numero }}" name="codigo" value="{{ equipo.get('codigo', '') }}">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {# MODAL PARA ELIMINAR EQUIPO #}
-    <div class="modal fade" id="deleteEquipoModal{{ equipo.numero }}" tabindex="-1" aria-labelledby="deleteEquipoModalLabel{{ equipo.numero }}" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteEquipoModalLabel{{ equipo.numero }}">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar el equipo con Serial <strong>{{ equipo.get('serial', 'N/A') }}</strong> (Tipo: <strong>{{ equipo.get('tipo', 'N/A') }}</strong>)? Esta acción no se puede deshacer.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form action="{{ url_for('modulos.eliminar_equipo_modulo', modulo=modulo_actual, numero=equipo.numero) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
 </div>
 {% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{# Importar Boxicons - añadir esto en tu base.html o aquí si solo lo necesitas en esta página #}
-<script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-<script>
-
-
-    // --- PASO 1: Exponer los datos de los equipos a JavaScript ---
-    const allEquipos = {{ equipos | tojson }};
-
-    // --- PASO 2: Obtener referencias a los elementos del DOM (usando IDs) ---
-    const searchInput = document.getElementById('searchInput');
-    const tipoFilter = document.getElementById('tipoFilter');
-    const marcaFilter = document.getElementById('marcaFilter');
-    const ramFilter = document.getElementById('ramFilter');
-    const almacenamientoFilter = document.getElementById('almacenamientoFilter');
-    const tbody = document.querySelector('table tbody');
-    const noResultsMessage = document.getElementById('noResultsMessage'); // Mensaje de no resultados
-
-    // --- PASO 3: Implementar la función de filtrado ---
-    function filterTable() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedTipo = tipoFilter.value;
-        const selectedMarca = marcaFilter.value;
-        const selectedRam = ramFilter.value;
-        const selectedAlmacenamiento = almacenamientoFilter.value;
-
-        tbody.innerHTML = ''; // Limpia la tabla existente
-        noResultsMessage.style.display = 'none'; // Oculta el mensaje de no resultados por defecto
-
-        let filteredEquipos = allEquipos.filter(equipo => {
-            // Criterios de búsqueda (verificar si el término está en cualquier propiedad del equipo)
-            const matchesSearch = Object.values(equipo).some(value =>
-                String(value).toLowerCase().includes(searchTerm)
-            );
-
-            // Criterios de filtro por selectores
-            // Usa .get() para acceder a las propiedades del equipo de forma segura
-            const matchesTipo = selectedTipo === 'Todos los tipos' || equipo.tipo === selectedTipo;
-            const matchesMarca = selectedMarca === 'Todas las marcas' || equipo.marca === selectedMarca;
-            const matchesRam = selectedRam === 'Toda la RAM' || equipo.ram === selectedRam;
-            const matchesAlmacenamiento = selectedAlmacenamiento === 'Todo el almacenamiento' || equipo.almacenamiento === selectedAlmacenamiento;
-
-            return matchesSearch && matchesTipo && matchesMarca && matchesRam && matchesAlmacenamiento;
-        });
-
-        // Re-renderiza la tabla con los equipos filtrados
-        if (filteredEquipos.length > 0) {
-            filteredEquipos.forEach((equipo, index) => {
-                const row = tbody.insertRow();
-                // Asegúrate de que todas estas propiedades existan en 'equipo'
-                row.insertCell().textContent = equipo.numero; // Asigna el número original del equipo
-                row.insertCell().textContent = equipo.tipo || '';
-                row.insertCell().textContent = equipo.serial || '';
-                row.insertCell().textContent = equipo.marca || '';
-                row.insertCell().textContent = equipo.modelo || '';
-                row.insertCell().textContent = equipo.comentario || '';
-                row.insertCell().textContent = equipo.procesador || '';
-                row.insertCell().textContent = equipo.almacenamiento || '';
-                row.insertCell().textContent = equipo.ram || '';
-                row.insertCell().textContent = equipo.codigo || '';
-
-                const actionsCell = row.insertCell();
-                actionsCell.className = 'text-center';
-
-                // Botón de Editar
-                const editButton = document.createElement('button');
-                editButton.className = 'btn btn-sm btn-outline-info me-1';
-                editButton.innerHTML = '<i class="bi bi-pencil"></i>';
-                editButton.setAttribute('data-bs-toggle', 'modal');
-                editButton.setAttribute('data-bs-target', `#editEquipoModal${equipo.numero}`);
-                actionsCell.appendChild(editButton);
-
-                // Formulario y Botón de Eliminar
-                const deleteForm = document.createElement('form');
-                deleteForm.action = `{{ url_for('modulos.eliminar_equipo_modulo', modulo=modulo_actual, numero=0) }}`.replace('0', equipo.numero);
-                deleteForm.method = 'POST';
-                deleteForm.style.display = 'inline';
-                deleteForm.onsubmit = confirmarEliminacion;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.type = 'submit';
-                deleteButton.className = 'btn btn-sm btn-outline-danger';
-                deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
-                deleteForm.appendChild(deleteButton);
-                actionsCell.appendChild(deleteForm);
-            });
-        } else {
-            noResultsMessage.style.display = 'block'; // Muestra el mensaje si no hay resultados
-        }
-    }
-
-    // --- PASO 4: Asignar Event Listeners ---
-    searchInput.addEventListener('input', filterTable);
-    tipoFilter.addEventListener('change', filterTable);
-    marcaFilter.addEventListener('change', filterTable);
-    ramFilter.addEventListener('change', filterTable);
-    almacenamientoFilter.addEventListener('change', filterTable);
-
-    // --- PASO 5: Llamar a la función de filtrado inicialmente para mostrar todos los equipos ---
-    filterTable();
-
-    // Función para confirmar eliminación con SweetAlert2
-    function confirmarEliminacion(event) {
-        event.preventDefault(); // Detiene el envío del formulario por defecto
-
-        const form = this; // 'this' se refiere al formulario que desencadenó el evento
-
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "¡No podrás revertir esto!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminarlo!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit(); // Si el usuario confirma, envía el formulario
-            }
-        });
-        return false; // Evita el envío del formulario si no se confirma
-    }
-</script>
-{% endblock %}
-</body>
-</html>

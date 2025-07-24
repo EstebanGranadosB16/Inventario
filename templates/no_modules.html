@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Sin Módulos{% endblock %}
+
+{% block content %}
+<div class="container mt-4 text-center">
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">¡Ups! No tienes módulos aún.</h4>
+        <p>Parece que no hay módulos de inventario asociados a tu cuenta. ¡Es hora de crear el primero!</p>
+        <hr>
+        <p class="mb-0">Haz clic en el botón de abajo para empezar a organizar tu inventario.</p>
+    </div>
+    {# Este es el enlace que lleva al formulario GET #}
+    <a href="{{ url_for('mostrar_formulario_crear_modulo') }}" class="btn btn-primary mt-3">Crear Nuevo Módulo</a>
+    
+    {# Si tenías un formulario rápido aquí, asegúrate de que su action sea 'crear_modulo' con method="POST" #}
+    <div class="card mt-4 p-4 shadow-sm mx-auto" style="max-width: 500px;">
+        <h5>Crear Módulo Rápido</h5>
+        <form action="{{ url_for('crear_modulo') }}" method="POST"> 
+            <div class="mb-3">
+                <label for="nombre_modulo" class="form-label">Nombre del Módulo</label>
+                <input type="text" class="form-control" id="nombre_modulo" name="nombre" required>
+            </div>
+            <button type="submit" class="btn btn-success">Crear Módulo</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

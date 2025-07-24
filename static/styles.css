@@ -22,83 +22,165 @@ h1, h2, h3, h4, h5, h6 {
 /* Estilos del Sidebar (Barra Lateral) */
 /* ========================================= */
 .sidebar {
-    width: 400px;
+    width: 250px; /* Ancho fijo para el sidebar */
     background-color: white;
-    color: #ffffff;
-    padding: 25px 0;
+    color: #1c1d1f; /* Color de texto general para el sidebar */
+    padding: 0; /* Eliminado el padding general, lo aplicaremos por sección */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Apila los elementos verticalmente */
+    justify-content: space-between; /* Empuja el contenido de arriba y abajo a los extremos */
     position: sticky;
     top: 0;
     height: 100vh;
-    box-shadow: 20px 0px 18px rgba(0, 0, 0, 0.1);
+    box-shadow: 100px 10px 20px rgba(0, 0, 0, 0.1); /* Sombra hacia la derecha */
     z-index: 1000;
+    flex-shrink: 0; /* Evita que el sidebar se encoja */
 }
 
 .sidebar img {
-    margin: 0 auto 20px auto;
+    margin: 30px auto 20px auto; /* Centra el logo con margen superior */
     display: block;
-    margin-top: 8%;
+    width: 120px; /* Tamaño más adecuado para el logo */
 }
 
-.sidebar a {
-    margin-top: 5%;
+/* Contenedores de secciones dentro del sidebar para padding consistente */
+.sidebar > div:not(.auth-section-sidebar) {
+    padding: 0 20px; /* Padding horizontal para todas las secciones excepto la de autenticación */
+}
+
+.sidebar h6.text-muted {
+    color: #6c757d; /* Color de texto más suave */
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    margin: 15px 0 10px 0; /* Espacio para los títulos de sección */
+    letter-spacing: 0.05em;
+    padding-left: 0; /* Asegura que no haya padding extra aquí */
+}
+
+.sidebar .nav-link { /* Estilos generales para los enlaces de navegación del sidebar */
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    color: #1c1d1f;
+    padding: 10px 15px; /* Padding para los ítems de menú */
+    color: #343a40; /* Color de texto de los enlaces */
     text-decoration: none;
     font-size: 0.95rem;
     transition: all 0.2s ease-in-out;
-    border-left: 4px solid transparent;
+    border-radius: 0.5rem; /* Bordes redondeados para los enlaces */
+    margin-bottom: 5px; /* Espacio entre los enlaces */
 }
 
-.sidebar a:hover {
-    background-color: #2d2d44;
-    color: #ffffff;
-    border-left: 4px solid #0d6efd;
+.sidebar .nav-link:hover {
+    background-color: #e9ecef; /* Fondo suave al pasar el ratón */
+    color: #007bff; /* Color primario al pasar el ratón */
 }
 
-.sidebar a box-icon {
+.sidebar .nav-link .bi {
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+    font-size: 1.1rem; /* Tamaño de los iconos de Bootstrap */
+}
+
+/* Estilo para el enlace de módulo activo/seleccionado */
+.sidebar .nav-link.text-primary,
+.sidebar .nav-link.active { /* Incluir 'active' si usas esa clase para el módulo actual */
+    background-color: #007bff; /* Fondo azul para el activo */
+    color: white !important; /* Texto blanco */
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); /* Sombra sutil para el activo */
+}
+
+.sidebar .nav-link.text-primary:hover,
+.sidebar .nav-link.active:hover {
+    background-color: #0060d0; /* Azul más oscuro al pasar el ratón sobre el activo */
+}
+
+/* ========================================= */
+/* Estilos Específicos para la Sección de Autenticación en el Sidebar */
+/* ========================================= */
+.auth-section-sidebar {
+    padding: 20px;
+    margin-top: auto;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.02);
+}
+
+.user-info-sidebar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.user-info-sidebar .bi {
+    font-size: 1.8rem;
     margin-right: 10px;
-    width: 20px;
-    height: 20px;
+    color: #007bff;
 }
 
-.sidebar .text-muted {
-    color: #aaaaaa;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    margin: 15px 0 5px 20px;
-    letter-spacing: 0.05em;
+.user-info-sidebar .username {
+    font-weight: 700;
+    color: #212529;
+    font-size: 1.1em;
 }
 
-.sidebar .d-block {
-    padding: 10px 20px;
-    padding-left: 35px;
-    font-size: 0.9rem;
-    color: #222222;
-    border-left: 4px solid transparent;
+.user-info-sidebar .role {
+    font-size: 0.85em;
+    color: #6c757d;
+    display: block;
 }
 
-.sidebar .d-block:hover {
-    color: #ffffff;
-    background-color: #2c2f42;
-    border-left: 4px solid #17a2b8;
+.auth-section-sidebar .nav-link { /* Sobrescribe el estilo general del nav-link del sidebar */
+    padding: 10px 15px;
+    border-radius: 0.5rem;
+    margin-bottom: 8px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
 }
 
-.sidebar .text-primary {
-    background-color: #0d6efd;
+.auth-section-sidebar .nav-link .bi {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.auth-section-sidebar .nav-link.text-success {
+    background-color: #28a745;
     color: white !important;
-    border-left: 4px solid #ffffff !important;
 }
 
+.auth-section-sidebar .nav-link.text-success:hover {
+    background-color: #218838;
+    transform: translateX(3px);
+}
+
+.auth-section-sidebar .nav-link.text-info {
+    background-color: #17a2b8;
+    color: white !important;
+}
+
+.auth-section-sidebar .nav-link.text-info:hover {
+    background-color: #138496;
+    transform: translateX(3px);
+}
+
+.auth-section-sidebar .nav-link.text-danger {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+.auth-section-sidebar .nav-link.text-danger:hover {
+    background-color: #c82333;
+    transform: translateX(3px);
+}
 
 /* ========================================= */
 /* Estilos del Contenido Principal */
 /* ========================================= */
 .content {
-    flex-grow: 2; /* El contenido principal ocupa el espacio restante */
+    flex-grow: 1; /* El contenido principal ocupa el espacio restante */
     padding: 30px; /* Padding general alrededor del contenido */
     background-color: #f0f2f5; /* Fondo del contenido, igual que el body */
     overflow-y: auto; /* Permite scroll vertical en el contenido */
@@ -106,13 +188,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Ajustes para el contenedor principal dentro del contenido */
 .container {
-    width: 1800px; /* Aumenta el ancho máximo del contenedor principal */
+    max-width: 1800px; /* Aumenta el ancho máximo del contenedor principal */
     margin: 0 auto; /* Centra el contenedor */
     padding: 0; /* Eliminar padding si el 'content' ya lo maneja */
 }
 
 .content .container { /* Asegúrate de que este selector sea específico para el contenedor dentro de .content */
-    max-width: 100%; /* Aumenta este valor, por ejemplo, a 1600px, 1800px, o incluso '100%' */
+    max-width: 100%; /* El contenedor dentro del content siempre ocupará el 100% de su padre */
     margin: 0 auto;
     padding: 0;
 }
@@ -148,24 +230,22 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #ffffff; /* Fondo blanco para el cuerpo de la tarjeta */
     border-bottom-left-radius: 0.75rem;
     border-bottom-right-radius: 0.75rem;
-    margin-right: 10%;
-    width: 100%;
+    /* margin-right: 10%; Removido, esto podría causar problemas de layout */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
 }
+
+/* Clase específica para el card-body que tenías con margin-right: 33% */
 .card-body1 {
     padding: 1.5rem; /* Espaciado interno */
     background-color: #ffffff; /* Fondo blanco para el cuerpo de la tarjeta */
     border-bottom-left-radius: 0.75rem;
     border-bottom-right-radius: 0.75rem;
-    margin-right: 33%;
+    margin-right: 33%; /* Esto puede causar problemas de diseño, considera si realmente lo necesitas */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-
 }
 
-
-
-
-.Resumen_equipos{
-    background-color: #e2e2e2;
+.Resumen_equipos {
+    background-color: #e2e2e2; /* Un gris más oscuro para el resumen */
 }
 
 
@@ -272,6 +352,28 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateY(-1px);
 }
 
+.btn-success { /* Para el botón Ingresar (en la lista de módulos) */
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+}
+
+.btn-warning { /* Para el botón de edición */
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529; /* Color de texto más oscuro para el botón de edición */
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #212529;
+}
+
+
 /* Botones pequeños (en tablas, modals) */
 .btn-sm {
     padding: 0.4rem 0.75rem;
@@ -287,23 +389,15 @@ h1, h2, h3, h4, h5, h6 {
     vertical-align: middle;
 }
 
-.btn box-icon {
-    vertical-align: middle;
-    margin-right: 5px; /* Espacio entre el icono y el texto en el botón "Volver" */
-}
-
-/* ========================================= */
-/* Estilos de Tablas */
-/* ========================================= */
 /* ========================================= */
 /* Estilos de Tablas */
 /* ========================================= */
 .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border: 1px solid #fff5f5; /* Borde más aqua */
+    border: 1px solid #e0e6ff; /* Borde más sutil */
     border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0, 209, 209, 0.1); /* Sombra ligeramente aqua */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
     margin-top: 20px;
     width: 100%; /* Asegura que la tabla ocupe todo el ancho del contenedor */
 }
@@ -311,15 +405,15 @@ h1, h2, h3, h4, h5, h6 {
 .table {
     width: 100%;
     margin-bottom: 0;
-    background-color: #e0e6ff83; /* Fondo principal de la tabla en un aqua muy claro */
+    background-color: #ffffff; /* Fondo principal de la tabla blanco */
     border-collapse: collapse;
 }
 
 .table thead th {
-    background-color: #00A651; /* Un aqua más oscuro para el encabezado de la tabla */
-    color: #FFFFFF; /* Texto blanco para contraste en el encabezado aqua */
+    background-color: #007bff; /* Azul primario para el encabezado de la tabla */
+    color: #FFFFFF; /* Texto blanco para contraste en el encabezado */
     font-weight: 600;
-    border-bottom: 2px solid #edf3f3; /* Borde inferior del encabezado en un aqua más oscuro */
+    border-bottom: 2px solid #0056b3; /* Borde inferior del encabezado */
     padding: 1rem;
     text-align: left;
 }
@@ -329,17 +423,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: #F0FFFF; /* Filas impares en un aqua muy claro, casi blanco */
+    background-color: #f8f9fa; /* Filas impares en un gris muy claro */
 }
 
 .table-hover tbody tr:hover {
-    background-color: #A0F5F5; /* Un aqua más vibrante al pasar el ratón */
+    background-color: #e9ecef; /* Un gris más claro al pasar el ratón */
 }
 
 .table td, .table th {
     vertical-align: middle;
     padding: 0.85rem 1rem;
-    border-top: 1px solid #80E0E0; /* Borde entre celdas en un tono aqua */
+    border-top: 1px solid #dee2e6; /* Borde entre celdas */
 }
 
 .table tbody tr:first-child td {
@@ -351,6 +445,7 @@ h1, h2, h3, h4, h5, h6 {
     min-width: 120px;
     text-align: center;
 }
+
 /* ========================================= */
 /* Estilos de Alertas (Flash Messages) */
 /* ========================================= */
@@ -363,13 +458,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================= */
-/* Estilos para el Resumen del Módulo */
+/* Estilos para el Resumen del Módulo (dentro de card-body) */
 /* ========================================= */
 .card-body ul {
     list-style: none;
     padding-left: 0;
     margin-top: 10px;
-    
 }
 .card-body ul li {
     margin-bottom: 5px;
@@ -427,7 +521,7 @@ hr {
         width: 100%; /* Sidebar ocupa todo el ancho */
         height: auto; /* Altura automática */
         position: relative; /* Quita el sticky para que fluya */
-        padding: 15px 0;
+        padding: 15px 0; /* Ajusta el padding para móviles */
     }
 
     .sidebar img {
@@ -435,18 +529,19 @@ hr {
         margin-bottom: 20px;
     }
 
-    .sidebar a {
+    .sidebar .nav-link { /* Ajustes para enlaces del sidebar en móvil */
         margin: 5px 10px;
         padding: 10px 15px;
         font-size: 0.95em;
     }
 
-    .sidebar .text-muted {
-        padding-left: 15px;
+    .sidebar > div:not(.auth-section-sidebar) {
+        padding: 0 15px; /* Ajusta el padding para secciones del sidebar en móvil */
     }
 
-    .sidebar a.d-block {
-        padding-left: 30px;
+    .sidebar h6.text-muted {
+        padding-left: 0;
+        margin-left: 0;
     }
 
     .content {
@@ -493,40 +588,14 @@ hr {
     .modal-dialog {
         margin: 10px; /* Reducir margen del modal en pantallas pequeñas */
     }
+
+    /* Ajustes específicos para las tarjetas de módulo en la vista principal de módulos */
+    .row.row-cols-1.row-cols-md-3.g-4 {
+        flex-direction: column;
+        align-items: center; /* Centra las tarjetas si es una sola columna */
+    }
+    .row.row-cols-1.row-cols-md-3.g-4 > .col {
+        width: 100%; /* Cada columna ocupa el ancho completo */
+        max-width: 300px; /* Limita el ancho de la tarjeta para que no sea demasiado grande en móvil */
+    }
 }
-
-/* ========================================= */
-/* Utilidades y Correcciones Específicas */
-/* ========================================= */
-
-/* Margen inferior para elementos de formulario y grupos de margen de Bootstrap */
-.form-group,
-.mb-3 {
-    margin-bottom: 1rem !important; /* Asegura un espaciado consistente */
-}
-
-/* Corrección para que los iconos de Bootstrap se vean correctamente en el botón "Volver" */
-.btn box-icon[name='arrow-back'] {
-    width: 18px; /* Tamaño específico si no coincide con el estilo de Boxicons general */
-    height: 18px;
-    vertical-align: middle;
-}
-
-
-@media (max-width: 768px) {
-  .content .d-flex.flex-wrap {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .module-card {
-    width: 100% !important;
-  }
-
-  .module-card .d-flex {
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: space-between;
-  }
-}
-

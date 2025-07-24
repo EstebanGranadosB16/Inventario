@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from collections import Counter # Necesario para las estadísticas en ver_modulo
+from collections import Counter
 
 # --- Configuración base ---
 app = Flask(__name__)
-app.secret_key = 'clave_secreta_muy_segura'  # ¡CAMBIA ESTO EN PRODUCCIÓN! Usa os.urandom(24) o similar
+# ¡IMPORTANTE! Cambia esta clave secreta en producción.
+# Puedes generarla con os.urandom(24)
+app.secret_key = 'clave_secreta_muy_segura'
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'inventario.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
@@ -101,7 +103,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        rol = request.form['rol']  # "admin" o "tecnico"
+        rol = request.form['rol']    # "admin" o "tecnico"
         if Usuario.query.filter_by(username=username).first():
             flash('El usuario ya existe', 'warning')
         else:
@@ -113,12 +115,15 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
-# --- Módulos (ver_modulo ahora es la vista principal) ---
+# --- Módulos (ver_modulo_principal es la vista principal que también muestra detalles de módulo) ---
 @app.route('/')
 @app.route('/modulo/<int:modulo_id>') 
 @login_required
-def ver_modulo_principal(modulo_id=None): # Renombrado para claridad, y modulo_id es opcional
-    """Muestra los detalles de un módulo específico o redirige al primero disponible."""
+def ver_modulo_principal(modulo_id=None): # modulo_id es opcional
+    """
+    Muestra los detalles de un módulo específico o redirige al primero disponible.
+    Si no hay módulos y el usuario puede crear uno, le invita a hacerlo.
+    """
     
     # Obtener todos los módulos disponibles para el usuario actual (o todos si es admin)
     if current_user.rol == 'admin':
@@ -129,18 +134,24 @@ def ver_modulo_principal(modulo_id=None): # Renombrado para claridad, y modulo_i
     # Si no se especificó un modulo_id y hay módulos disponibles, redirige al primero
     if modulo_id is None:
         if modulos_disponibles:
+            # Redirige a la URL con el ID del primer módulo
             return redirect(url_for('ver_modulo_principal', modulo_id=modulos_disponibles[0].id))
         else:
             # Si no hay módulos, renderiza una página para crear el primer módulo
             flash('Aún no tienes módulos. ¡Crea tu primer módulo!', 'info')
-            return render_template('no_modules.html', modulos=modulos_disponibles) # Pasar modulos para el sidebar
+            # PASAR modulos=modulos_disponibles AQUÍ TAMBIÉN para que el template de creación muestre la lista (vacía)
+            return render_template('crear_modulo_form.html', modulos=modulos_disponibles)
+            # Nota: la ruta 'crear_modulo' (GET) ahora es la que mostrará el formulario de creación y la lista de módulos.
+
 
     # Si se especificó un modulo_id
     modulo = Modulo.query.get_or_404(modulo_id)
+    
     # Verifica si el usuario tiene permiso para ver este módulo
     if current_user.rol != 'admin' and modulo.usuario_id != current_user.id:
         flash('No tienes acceso a este módulo', 'danger')
-        return redirect(url_for('ver_modulo_principal')) # Redirige a la vista principal sin módulo específico
+        # Redirige a la vista principal sin módulo específico o al login si no hay nada más
+        return redirect(url_for('ver_modulo_principal')) 
 
     equipos = Equipo.query.filter_by(modulo_id=modulo.id).all() # Obtener todos los equipos del módulo
 
@@ -180,28 +191,51 @@ def ver_modulo_principal(modulo_id=None): # Renombrado para claridad, y modulo_i
         modulo_actual=modulo # Pasar el objeto módulo actual para resaltar en el sidebar
     )
 
-@app.route('/crear_modulo', methods=['POST'])
+@app.route('/crear_modulo', methods=['GET', 'POST'])
 @login_required
 def crear_modulo():
-    """Crea un nuevo módulo."""
-    nombre = request.form['nombre']
+    """
+    Muestra el formulario para crear un nuevo módulo (GET)
+    o procesa la creación de un nuevo módulo (POST).
+    """
+    # Obtener módulos disponibles para el sidebar, incluso si el método es GET y no hay módulos aún
     if current_user.rol == 'admin':
-        # Admin puede crear módulos con nombres duplicados si son para diferentes usuarios,
-        # pero aquí simplificamos y comprobamos si el nombre ya existe para CUALQUIER usuario.
-        if Modulo.query.filter_by(nombre=nombre).first():
-            flash(f'Ya existe un módulo global con el nombre "{nombre}".', 'warning')
-            return redirect(url_for('ver_modulo_principal'))
+        modulos_disponibles = Modulo.query.all()
     else:
-        # Los técnicos solo pueden crear módulos para ellos mismos y no pueden duplicar nombres.
-        if Modulo.query.filter_by(nombre=nombre, usuario_id=current_user.id).first():
-            flash(f'Ya existe un módulo con el nombre "{nombre}" para tu usuario.', 'warning')
-            return redirect(url_for('ver_modulo_principal'))
+        modulos_disponibles = Modulo.query.filter_by(usuario_id=current_user.id).all()
 
-    modulo = Modulo(nombre=nombre, usuario_id=current_user.id)
-    db.session.add(modulo)
-    db.session.commit()
-    flash('Módulo creado exitosamente', 'success')
-    return redirect(url_for('ver_modulo_principal', modulo_id=modulo.id)) # Redirige al nuevo módulo
+    if request.method == 'POST':
+        # --- Lógica para procesar el formulario de creación de módulo (SOLO en POST) ---
+        nombre = request.form.get('nombre') # Usar .get() es más seguro
+        
+        # Validaciones básicas
+        if not nombre:
+            flash('El nombre del módulo es requerido.', 'danger')
+            return render_template('crear_modulo_form.html', modulos=modulos_disponibles, nombre_previo=nombre) # Pasa los módulos y el nombre para mantenerlo
+
+        if current_user.rol == 'admin':
+            if Modulo.query.filter_by(nombre=nombre).first():
+                flash(f'Ya existe un módulo global con el nombre "{nombre}".', 'warning')
+                return render_template('crear_modulo_form.html', modulos=modulos_disponibles, nombre_previo=nombre)
+        else:
+            if Modulo.query.filter_by(nombre=nombre, usuario_id=current_user.id).first():
+                flash(f'Ya existe un módulo con el nombre "{nombre}" para tu usuario.', 'warning')
+                return render_template('crear_modulo_form.html', modulos=modulos_disponibles, nombre_previo=nombre)
+
+        try:
+            modulo = Modulo(nombre=nombre, usuario_id=current_user.id)
+            db.session.add(modulo)
+            db.session.commit()
+            flash('Módulo creado exitosamente', 'success')
+            return redirect(url_for('ver_modulo_principal', modulo_id=modulo.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al crear el módulo: {e}', 'danger')
+            return render_template('crear_modulo_form.html', modulos=modulos_disponibles, nombre_previo=nombre)
+
+    # --- Lógica para mostrar el formulario de creación de módulo (SOLO en GET) ---
+    # Cuando el método es GET, simplemente renderiza el formulario
+    return render_template('crear_modulo_form.html', modulos=modulos_disponibles)
 
 @app.route('/eliminar_modulo/<int:modulo_id>', methods=['POST'])
 @login_required
@@ -216,7 +250,7 @@ def eliminar_modulo(modulo_id):
     db.session.delete(modulo)
     db.session.commit()
     flash(f'Módulo "{modulo.nombre}" eliminado exitosamente.', 'success')
-    return redirect(url_for('ver_modulo_principal')) # Redirige a la vista principal
+    return redirect(url_for('ver_modulo_principal'))
 
 # --- Equipos ---
 @app.route('/modulo/<int:modulo_id>/agregar_equipo', methods=['POST'])
@@ -227,6 +261,12 @@ def agregar_equipo(modulo_id):
     if current_user.rol != 'admin' and modulo.usuario_id != current_user.id:
         flash('No tienes acceso para agregar equipos a este módulo', 'danger')
         return redirect(url_for('ver_modulo_principal'))
+    
+    codigo = request.form.get("codigo")
+    if not codigo:
+        flash('El código del equipo es requerido.', 'danger')
+        return redirect(url_for('ver_modulo_principal', modulo_id=modulo.id))
+
     nuevo = Equipo(
         modulo_id=modulo.id,
         tipo=request.form.get("tipo"),
@@ -237,7 +277,7 @@ def agregar_equipo(modulo_id):
         procesador=request.form.get("procesador"),
         almacenamiento=request.form.get("almacenamiento"),
         ram=request.form.get("ram"),
-        codigo=request.form.get("codigo"),
+        codigo=codigo,
     )
     db.session.add(nuevo)
     db.session.commit()
@@ -280,7 +320,12 @@ def editar_equipo(modulo_id, equipo_id):
     equipo.procesador = request.form.get("procesador")
     equipo.almacenamiento = request.form.get("almacenamiento")
     equipo.ram = request.form.get("ram")
-    equipo.codigo = request.form.get("codigo")
+    
+    codigo = request.form.get("codigo")
+    if not codigo:
+        flash('El código del equipo es requerido.', 'danger')
+        return redirect(url_for('ver_modulo_principal', modulo_id=modulo.id))
+    equipo.codigo = codigo
     
     db.session.commit()
     flash('Equipo actualizado exitosamente', 'success')
@@ -299,4 +344,3 @@ if __name__ == '__main__':
             db.session.commit()
             print("Usuario 'admin' creado con contraseña 'adminpass'")
     app.run(debug=True)
-
