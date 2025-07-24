@@ -142,5 +142,65 @@
         "almacenamiento": "500 GB",
         "ram": "16 GB",
         "codigo": "soooooooooo"
+    },
+    {
+        "numero": 13,
+        "tipo": "Desktop",
+        "serial": "xxxxxxx",
+        "marca": "Lenovo",
+        "modelo": "Yoga 7i",
+        "comentario": "tiene un espapapapapa",
+        "procesador": "i3 88888",
+        "almacenamiento": "750 GB",
+        "ram": "34 gb",
+        "codigo": "soooooooooo"
+    },
+    {
+        "numero": 14,
+        "tipo": "Desktop",
+        "serial": "sadsa",
+        "marca": "sadas",
+        "modelo": "asdasd",
+        "comentario": "sadasd",
+        "procesador": "dasdas",
+        "almacenamiento": "asdas",
+        "ram": "asd",
+        "codigo": "asd"
+    },
+    {
+        "numero": 15,
+        "tipo": "All in One",
+        "serial": "ppp",
+        "marca": "aaa",
+        "modelo": "aaa",
+        "comentario": "aaa",
+        "procesador": "aaaa",
+        "almacenamiento": "aaa",
+        "ram": "aaa",
+        "codigo": "aaa"
+    },
+    {
+        "numero": 16,
+        "tipo": "Desktop",
+        "serial": "asdasd",
+        "marca": "Asus",
+        "modelo": "sadasd",
+        "comentario": "adsa",
+        "procesador": "3333",
+        "almacenamiento": "asdasd",
+        "ram": "asdsad",
+        "codigo": "dsadas"
+    },
+    {
+        "numero": 17,
+        "tipo": "Desktop",
+        "serial": "hgjgh",
+        "marca": "jghjgh",
+        "modelo": "hjhj",
+        "comentario": "ghj",
+        "procesador": "jgh",
+        "almacenamiento": "hj",
+        "ram": "hjghj",
+        "codigo": "hgjhgj"
     }
 ]

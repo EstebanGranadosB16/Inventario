@@ -81,121 +81,96 @@ td {
     </style>
 <body>
     <!-- Modal Agregar Equipo -->
-<div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <form action="/agregar" method="POST" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalAgregarLabel">Agregar Nuevo Equipo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body row g-3">
-        <div class="col-md-4">
-            <label class="form-label">Tipo</label>
-            <select name="tipo" class="form-select" required>
-                <option value="">Tipo...</option>
-                <option value="Desktop">Desktop</option>
-                <option value="All in One">All in One</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Serial</label>
-            <input type="text" name="serial" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Marca</label>
-            <input type="text" name="marca" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Modelo</label>
-            <input type="text" name="modelo" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Comentario</label>
-            <input type="text" name="comentario" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Procesador</label>
-            <input type="text" name="procesador" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Almacenamiento</label>
-            <input type="text" name="almacenamiento" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">RAM</label>
-            <input type="text" name="ram" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Código</label>
-            <input type="text" name="codigo" class="form-control">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success">Guardar Equipo</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Modal Editar Equipo -->
-<div id="modal-editar" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form id="form-editar" method="post">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Equipo</h5>
-          <button type="button" class="btn-close" onclick="cerrarModal()"></button>
-        </div>
-        <div class="modal-body row g-3">
-          <input type="hidden" id="edit-numero" name="numero">
-          <div class="col-md-4">
-              <label>Tipo</label>
-              <select name="tipo" id="edit-tipo" class="form-select" required>
-                  <option value="Desktop">Desktop</option>
-                  <option value="All in One">All in One</option>
-              </select>
-          </div>
-          <div class="col-md-4">
-              <label>Serial</label>
-              <input type="text" name="serial" id="edit-serial" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-              <label>Marca</label>
-              <input type="text" name="marca" id="edit-marca" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-              <label>Modelo</label>
-              <input type="text" name="modelo" id="edit-modelo" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-              <label>Comentario</label>
-              <input type="text" name="comentario" id="edit-comentario" class="form-control">
-          </div>
-          <div class="col-md-4">
-              <label>Procesador</label>
-              <input type="text" name="procesador" id="edit-procesador" class="form-control">
-          </div>
-          <div class="col-md-4">
-              <label>Almacenamiento</label>
-              <input type="text" name="almacenamiento" id="edit-almacenamiento" class="form-control">
-          </div>
-          <div class="col-md-4">
-              <label>RAM</label>
-              <input type="text" name="ram" id="edit-ram" class="form-control">
-          </div>
-          <div class="col-md-4">
-              <label>Código</label>
-              <input type="text" name="codigo" id="edit-codigo" class="form-control">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Guardar cambios</button>
-          <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-        </div>
-      </form>
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Agregar Nuevo Equipo a {{ modulo_actual }}</h4>
     </div>
-  </div>
+    <div class="card-body">
+        {# Este es el formulario que necesitas modificar en modulos.html #}
+        <form action="{{ url_for('modulos.agregar_equipo_modulo', modulo=modulo_actual) }}" method="POST">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select class="form-select" id="tipo" name="tipo" required>
+                        <option value="">Selecciona un tipo</option>
+                        <option value="All-in-One">All-in-One</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Servidor">Servidor</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="serial" class="form-label">Serial</label>
+                    <input type="text" class="form-control" id="serial" name="serial" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="marca" class="form-label">Marca</label>
+                    <select class="form-select" id="marca" name="marca">
+                        <option value="">Selecciona una marca</option>
+                        <option value="HP">HP</option>
+                        <option value="Lenovo">Lenovo</option>
+                        <option value="Dell">Dell</option>
+                        <option value="Asus">Asus</option>
+                        <option value="Acer">Acer</option>
+                        <option value="Apple">Apple</option>
+                        <option value="MSI">MSI</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="modelo" class="form-label">Modelo</label>
+                    <input type="text" class="form-control" id="modelo" name="modelo">
+                </div>
+                <div class="col-md-8">
+                    <label for="comentario" class="form-label">Comentario</label>
+                    <textarea class="form-control" id="comentario" name="comentario" rows="1"></textarea>
+                </div>
+                <div class="col-md-4">
+                    <label for="procesador" class="form-label">Procesador</label>
+                    <select class="form-select" id="procesador" name="procesador">
+                        <option value="">Selecciona un procesador</option>
+                        <option value="Intel Core i3">Intel Core i3</option>
+                        <option value="Intel Core i5">Intel Core i5</option>
+                        <option value="Intel Core i7">Intel Core i7</option>
+                        <option value="Intel Core i9">Intel Core i9</option>
+                        <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+                        <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                        <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                        <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="almacenamiento" class="form-label">Almacenamiento</label>
+                    <select class="form-select" id="almacenamiento" name="almacenamiento">
+                        <option value="">Selecciona almacenamiento</option>
+                        <option value="128GB">128GB</option>
+                        <option value="256GB">256GB</option>
+                        <option value="500GB">500GB</option>
+                        <option value="750GB">750GB</option>
+                        <option value="1TB">1TB</option>
+                        <option value="2TB">2TB</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="ram" class="form-label">RAM</label>
+                    <select class="form-select" id="ram" name="ram">
+                        <option value="">Selecciona la RAM</option>
+                        <option value="4GB">4GB</option>
+                        <option value="8GB">8GB</option>
+                        <option value="16GB">16GB</option>
+                        <option value="32GB">32GB</option>
+                        <option value="64GB">64GB</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="codigo" class="form-label">Código</label>
+                    <input type="text" class="form-control" id="codigo" name="codigo">
+                </div>
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Añadir Equipo</button>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>

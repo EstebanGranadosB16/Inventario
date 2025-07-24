@@ -4,31 +4,51 @@
     <meta charset="UTF-8">
     <title>Gestión de Módulos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="content">
   <h2 class="mb-4">Módulos de Inventario</h2>
 
-  <!-- Formulario para crear nuevo módulo -->
-  <form action="/crear_modulo" method="POST" class="mb-4">
-    <div class="input-group w-50">
-      <input type="text" name="nombre_modulo" class="form-control" placeholder="Nombre del nuevo módulo" required>
-      <button class="btn btn-primary" type="submit">Crear Módulo</button>
-    </div>
-  </form>
+  <!-- Formulario para crear módulo -->
+  <div class="bg-light p-4 rounded mb-5" style="max-width: 500px;">
+    <h5>Crear Nuevo Módulo</h5>
+    <form action="/crear_modulo" method="POST">
+      <div class="mb-3">
+        <label for="nombre_modulo" class="form-label">Nombre del Módulo</label>
+        <input type="text" id="nombre_modulo" name="nombre_modulo" class="form-control" placeholder="Ej. Almacén Principal" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Módulo</button>
+    </form>
+  </div>
 
-  <!-- Lista de módulos existentes -->
-  <div class="list-group">
+  <!-- Módulos existentes -->
+  <h5 class="mb-3">Módulos Existentes</h5>
+  <div class="d-flex flex-wrap gap-3">
     {% for modulo in modulos %}
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <a href="/modulo/{{ modulo }}" class="text-decoration-none">{{ modulo }}</a>
-        <form action="/eliminar_modulo/{{ modulo }}" method="POST" onsubmit="return confirm('¿Eliminar el módulo {{ modulo }}?')">
-          <button class="btn btn-sm btn-danger">Eliminar</button>
-        </form>
+      <div class="bg-light p-3 rounded shadow-sm d-flex flex-column align-items-start" style="min-width: 250px;">
+        <!-- Icono y título -->
+        <div class="d-flex align-items-center mb-3">
+          {% if 'vehículo' in modulo.lower() %}
+            <i class="bi bi-truck fs-4 text-primary me-2"></i>
+          {% elif 'oficina' in modulo.lower() %}
+            <i class="bi bi-building fs-4 text-primary me-2"></i>
+          {% else %}
+            <i class="bi bi-house-door fs-4 text-primary me-2"></i>
+          {% endif %}
+          <strong class="fs-6">{{ modulo }}</strong>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex gap-2">
+          <a href="/modulo/{{ modulo }}" class="btn btn-sm btn-outline-primary">Ingresar</a>
+          <form action="/eliminar_modulo/{{ modulo }}" method="POST" onsubmit="return confirm('¿Eliminar el módulo {{ modulo }}?')">
+            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+          </form>
+        </div>
       </div>
     {% else %}
       <div class="alert alert-info">Aún no hay módulos creados.</div>
@@ -36,8 +56,6 @@
   </div>
 </div>
 {% endblock %}
-
-
 
 </body>
 </html>

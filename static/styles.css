@@ -1,96 +1,532 @@
+/* ========================================= */
+/* Estilos Generales del Cuerpo y Fuentes */
+/* ========================================= */
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
-    background-color: #f5f5f5;
+    background-color: #f0f2f5; /* Un gris muy claro para el fondo */
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Fuente moderna y legible */
+    color: #333; /* Color de texto general */
+    margin: 0; /* Eliminar margen por defecto del body */
+    padding: 0; /* Eliminar padding por defecto del body */
+    display: flex; /* Usar flexbox para el layout principal (sidebar + content) */
+    min-height: 100vh; /* Asegura que el body ocupe al menos el alto de la ventana */
+    overflow-x: hidden; /* Evita el scroll horizontal no deseado */
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: #212529; /* Títulos un poco más oscuros para contraste */
+    font-weight: 600; /* Un poco más de negrita para los títulos */
+    margin-bottom: 1rem; /* Espacio debajo de los títulos */
+}
+
+/* ========================================= */
+/* Estilos del Sidebar (Barra Lateral) */
+/* ========================================= */
 .sidebar {
-    width: 250px;
-    background-color: #f8f9fa;
-    padding-top: 30px;
-    position: fixed;
+    width: 400px;
+    background-color: white;
+    color: #ffffff;
+    padding: 25px 0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
     height: 100vh;
-    overflow-y: auto;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    z-index: 1030;
+    box-shadow: 20px 0px 18px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.sidebar img {
+    margin: 0 auto 20px auto;
+    display: block;
+    margin-top: 8%;
 }
 
 .sidebar a {
-    display: block;
+    margin-top: 5%;
+    display: flex;
+    align-items: center;
     padding: 12px 20px;
-    color: #333;
+    color: #1c1d1f;
     text-decoration: none;
-    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    border-left: 4px solid transparent;
 }
 
 .sidebar a:hover {
-    background-color: #e9ecef;
+    background-color: #2d2d44;
+    color: #ffffff;
+    border-left: 4px solid #0d6efd;
 }
 
+.sidebar a box-icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar .text-muted {
+    color: #aaaaaa;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin: 15px 0 5px 20px;
+    letter-spacing: 0.05em;
+}
+
+.sidebar .d-block {
+    padding: 10px 20px;
+    padding-left: 35px;
+    font-size: 0.9rem;
+    color: #222222;
+    border-left: 4px solid transparent;
+}
+
+.sidebar .d-block:hover {
+    color: #ffffff;
+    background-color: #2c2f42;
+    border-left: 4px solid #17a2b8;
+}
+
+.sidebar .text-primary {
+    background-color: #0d6efd;
+    color: white !important;
+    border-left: 4px solid #ffffff !important;
+}
+
+
+/* ========================================= */
+/* Estilos del Contenido Principal */
+/* ========================================= */
 .content {
-    margin-left: 250px;
-    padding: 30px;
-    flex: 1;
-    background-color: #f5f5f5;
+    flex-grow: 2; /* El contenido principal ocupa el espacio restante */
+    padding: 30px; /* Padding general alrededor del contenido */
+    background-color: #f0f2f5; /* Fondo del contenido, igual que el body */
+    overflow-y: auto; /* Permite scroll vertical en el contenido */
 }
 
-h2 {
-    margin-bottom: 20px;
+/* Ajustes para el contenedor principal dentro del contenido */
+.container {
+    width: 1800px; /* Aumenta el ancho máximo del contenedor principal */
+    margin: 0 auto; /* Centra el contenedor */
+    padding: 0; /* Eliminar padding si el 'content' ya lo maneja */
 }
 
-.row.mb-4 .card {
-    min-height: 140px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.content .container { /* Asegúrate de que este selector sea específico para el contenedor dentro de .content */
+    max-width: 100%; /* Aumenta este valor, por ejemplo, a 1600px, 1800px, o incluso '100%' */
+    margin: 0 auto;
+    padding: 0;
 }
 
-.row.mb-4 .card .card-title {
-    font-size: 1rem;
+/* ========================================= */
+/* Estilos de Tarjetas (Card) */
+/* ========================================= */
+.card {
+    border: none; /* Quitar el borde por defecto de Bootstrap */
+    border-radius: 0.75rem; /* Bordes más redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra suave para un efecto flotante */
+    transition: transform 0.2s ease-in-out; /* Transición para un pequeño efecto hover */
+    margin-bottom: 25px; /* Espacio entre tarjetas */
 }
 
-.row.mb-4 .card .card-text {
-    font-weight: bold;
+.card:hover {
+    transform: translateY(-3px); /* Ligeramente hacia arriba al pasar el ratón */
 }
 
-.row.mb-4 ul {
-    margin-bottom: 0;
-    padding-left: 1rem;
-    font-size: 0.9rem;
-    color: #fff;
+.card-header {
+    background-color: #ffffff; /* Fondo blanco para el encabezado */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Borde inferior sutil */
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    padding: 1.25rem 1.5rem; /* Espaciado interno */
+    font-weight: 600; /* Texto un poco más negrita */
+    color: #343a40; /* Color de texto más oscuro */
+    font-size: 1.2em; /* Tamaño de fuente del encabezado */
 }
 
-table {
-    background-color: white;
+.card-body {
+    padding: 1.5rem; /* Espaciado interno */
+    background-color: #ffffff; /* Fondo blanco para el cuerpo de la tarjeta */
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    margin-right: 10%;
+    width: 100%;
+}
+.card-body1 {
+    padding: 1.5rem; /* Espaciado interno */
+    background-color: #ffffff; /* Fondo blanco para el cuerpo de la tarjeta */
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    margin-right: 33%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
 }
 
-th {
-    background-color: #d80d0d;
-    color: white;
-    text-align: center;
+
+
+
+.Resumen_equipos{
+    background-color: #e2e2e2;
 }
 
-td {
-    text-align: center;
+
+/* ========================================= */
+/* Estilos de Formularios y Campos */
+/* ========================================= */
+.form-label {
+    font-weight: 500; /* Texto de etiquetas un poco más negrita */
+    color: #495057; /* Color de texto para las etiquetas */
+    margin-bottom: 0.25rem; /* Espacio debajo de la etiqueta */
 }
 
-.btn-danger {
+.form-control,
+.form-select,
+.input-group-text { /* Incluir input-group-text si usas grupos de input */
+    border-radius: 0.5rem; /* Bordes redondeados */
+    padding: 0.75rem 1rem; /* Aumentar ligeramente el padding para más "aire" */
+    border: 1px solid #ced4da; /* Borde estándar */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff; /* Borde azul al enfocar */
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra azul al enfocar */
+    outline: none; /* Eliminar el outline por defecto del navegador */
+}
+
+/* Espacio entre las filas del formulario */
+.row.g-3 > .col-md-4,
+.row.g-3 > .col-md-8,
+.row.g-3 > [class*="col-"] { /* Más general para cualquier columna */
+    padding-bottom: 1.25rem; /* Aumenta el padding vertical entre columnas en el formulario */
+}
+
+/* Estilos para la barra de búsqueda y filtros */
+.row.align-items-center.mb-4 {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem !important; /* Más espacio debajo de los filtros */
+}
+
+/* Estilos para los selectores de filtro */
+.form-select, .form-control#searchInput {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.375rem 0.75rem; /* Ajusta el padding para una mejor apariencia */
+}
+
+/* ========================================= */
+/* Estilos de Botones */
+/* ========================================= */
+.btn {
+    border-radius: 0.5rem; /* Bordes ligeramente más redondeados */
+    font-weight: 500; /* Un poco menos negrita */
+    padding: 0.75rem 1.25rem; /* Padding generoso para botones */
+    transition: all 0.2s ease-in-out; /* Transición suave para hover */
+    cursor: pointer; /* Asegurar que el cursor sea de puntero */
+    display: inline-flex; /* Permite alinear iconos y texto */
+    align-items: center; /* Alinea verticalmente */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    gap: 5px; /* Espacio entre icono y texto */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Azul de Bootstrap */
+    border-color: #007bff;
+}
+.btn-primary:hover {
+    background-color: #0056b3; /* Azul un poco más oscuro al pasar el ratón */
+    border-color: #004085;
+    transform: translateY(-1px); /* Pequeño efecto de elevación */
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-1px);
+}
+
+.btn-info { /* Para el botón Editar */
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+    transform: translateY(-1px);
+}
+
+.btn-danger { /* Para el botón Eliminar */
     background-color: #dc3545;
-    color: white;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
 }
 
-.btn-warning {
-    background-color: #ffc107;
-    color: black;
+/* Botones pequeños (en tablas, modals) */
+.btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    min-width: 35px; /* Asegura que los botones pequeños tengan un tamaño mínimo */
 }
 
-.modal .form-control,
-.modal .form-select {
+/* Estilos para los iconos dentro de los botones */
+.btn .bi {
+    font-size: 1rem; /* Tamaño de los iconos de Bootstrap */
+    vertical-align: middle;
+}
+
+.btn box-icon {
+    vertical-align: middle;
+    margin-right: 5px; /* Espacio entre el icono y el texto en el botón "Volver" */
+}
+
+/* ========================================= */
+/* Estilos de Tablas */
+/* ========================================= */
+/* ========================================= */
+/* Estilos de Tablas */
+/* ========================================= */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #fff5f5; /* Borde más aqua */
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 209, 209, 0.1); /* Sombra ligeramente aqua */
+    margin-top: 20px;
+    width: 100%; /* Asegura que la tabla ocupe todo el ancho del contenedor */
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #e0e6ff83; /* Fondo principal de la tabla en un aqua muy claro */
+    border-collapse: collapse;
+}
+
+.table thead th {
+    background-color: #00A651; /* Un aqua más oscuro para el encabezado de la tabla */
+    color: #FFFFFF; /* Texto blanco para contraste en el encabezado aqua */
+    font-weight: 600;
+    border-bottom: 2px solid #edf3f3; /* Borde inferior del encabezado en un aqua más oscuro */
+    padding: 1rem;
+    text-align: left;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #F0FFFF; /* Filas impares en un aqua muy claro, casi blanco */
+}
+
+.table-hover tbody tr:hover {
+    background-color: #A0F5F5; /* Un aqua más vibrante al pasar el ratón */
+}
+
+.table td, .table th {
+    vertical-align: middle;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid #80E0E0; /* Borde entre celdas en un tono aqua */
+}
+
+.table tbody tr:first-child td {
+    border-top: none;
+}
+
+/* Columnas de acciones */
+.table tbody tr td:last-child {
+    min-width: 120px;
+    text-align: center;
+}
+/* ========================================= */
+/* Estilos de Alertas (Flash Messages) */
+/* ========================================= */
+.alert {
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    font-size: 1.05em;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra ligera para alertas */
+}
+
+/* ========================================= */
+/* Estilos para el Resumen del Módulo */
+/* ========================================= */
+.card-body ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+    
+}
+.card-body ul li {
+    margin-bottom: 5px;
+    color: #6c757d; /* Un gris más suave */
+    font-size: 0.95em;
+}
+
+.card-body h6 {
+    margin-top: 15px;
     margin-bottom: 10px;
+    color: #343a40;
+}
+
+/* Estilo para la línea divisoria */
+hr {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 2.5rem 0; /* Espacio alrededor del HR */
+}
+
+/* ========================================= */
+/* Estilos para Modals (Ventanas Modales) */
+/* ========================================= */
+.modal-content {
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    padding: 1.25rem;
+}
+
+.modal-title {
+    color: #343a40;
+    font-weight: 600;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.25rem;
+}
+
+/* ========================================= */
+/* Media Queries para Responsividad */
+/* ========================================= */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column; /* Apilar sidebar y contenido en pantallas pequeñas */
+    }
+
+    .sidebar {
+        width: 100%; /* Sidebar ocupa todo el ancho */
+        height: auto; /* Altura automática */
+        position: relative; /* Quita el sticky para que fluya */
+        padding: 15px 0;
+    }
+
+    .sidebar img {
+        width: 80px; /* Tamaño del logo un poco más pequeño en móvil */
+        margin-bottom: 20px;
+    }
+
+    .sidebar a {
+        margin: 5px 10px;
+        padding: 10px 15px;
+        font-size: 0.95em;
+    }
+
+    .sidebar .text-muted {
+        padding-left: 15px;
+    }
+
+    .sidebar a.d-block {
+        padding-left: 30px;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .container {
+        padding: 0; /* Eliminar padding para que el contenido ocupe todo el ancho */
+    }
+
+    .row.align-items-center.mb-4 {
+        flex-direction: column; /* Apilar el botón y los filtros */
+        align-items: stretch !important; /* Estirar los elementos al 100% de ancho */
+    }
+
+    .row.align-items-center.mb-4 .col-md-4,
+    .row.align-items-center.mb-4 .col-md-8 {
+        width: 100%; /* Ocupar todo el ancho en móvil */
+        margin-bottom: 10px; /* Espacio entre el botón y los filtros */
+    }
+
+    .row.align-items-center.mb-4 .col-md-4 button {
+        margin-bottom: 15px; /* Espacio debajo del botón en móvil */
+    }
+
+    .row.g-2 {
+        flex-direction: column; /* Apilar los filtros */
+        gap: 10px; /* Espacio entre cada filtro */
+    }
+
+    .col-sm-4, .col-sm-2 {
+        width: 100%; /* Cada filtro ocupa el 100% de ancho */
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .table-responsive {
+        border: 1px solid #dee2e6; /* Borde para la tabla responsiva */
+        border-radius: 0.75rem;
+    }
+
+    .modal-dialog {
+        margin: 10px; /* Reducir margen del modal en pantallas pequeñas */
+    }
+}
+
+/* ========================================= */
+/* Utilidades y Correcciones Específicas */
+/* ========================================= */
+
+/* Margen inferior para elementos de formulario y grupos de margen de Bootstrap */
+.form-group,
+.mb-3 {
+    margin-bottom: 1rem !important; /* Asegura un espaciado consistente */
+}
+
+/* Corrección para que los iconos de Bootstrap se vean correctamente en el botón "Volver" */
+.btn box-icon[name='arrow-back'] {
+    width: 18px; /* Tamaño específico si no coincide con el estilo de Boxicons general */
+    height: 18px;
+    vertical-align: middle;
 }
 
 
-.row.g-2.mb-3 select.form-select {
-    font-size: 0.9rem;
-    padding: 6px 12px;
+@media (max-width: 768px) {
+  .content .d-flex.flex-wrap {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .module-card {
+    width: 100% !important;
+  }
+
+  .module-card .d-flex {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
 }
+
