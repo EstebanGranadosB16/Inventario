@@ -3,76 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Gestión de Inventario{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> {# Asegurarse de que el viewport esté aquí #}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> {# Bootstrap Icons #}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    {# Aquí puedes añadir otros enlaces CSS o JS que sean globales para todas las páginas #}
-    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script> {# Boxicons es global #}
+    {# ELIMINADO: <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script> #}
 </head>
 <body>
 
-<!-- Sidebar -->
-
-    {# Contenedor principal para el layout de sidebar y contenido #}
-    <div class="d-flex"> {# Usa d-flex de Bootstrap para el layout #}
-
-        <div class="sidebar">
-            <img src="https://s3.amazonaws.com/blab-impact-published-production/jUes7SjKK5W76xyP9y2fuzkSpLVSOezp" alt="Logo" height="170px">
-            <a href="{{ url_for('index') }}"><box-icon name='package'></box-icon> Inventario</a>
-
-            <div class="mt-4 px-3">
-                <h6 class="text-muted">Módulos</h6>
-                {% for modulo in modulos_disponibles %}
-                    <a class="d-block ms-2 {% if modulo == modulo_actual %}fw-bold text-primary{% endif %}"
-                       href="{{ url_for('modulos.ver_modulo', modulo=modulo) }}">
-                        📁 {{ modulo }}
-                    </a>
+<!-- Navbar (Barra de Navegación Superior) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}">Inventario App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link text-white">Bienvenido, {{ current_user.username }} ({{ current_user.rol }})</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión <i class="bi bi-box-arrow-right"></i></a>
+                    </li>
                 {% else %}
-                    <span class="text-muted ms-2">Sin módulos</span>
-                {% endfor %}
-            </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión <i class="bi bi-box-arrow-in-right"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Registrarse <i class="bi bi-person-plus"></i></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 
-            <a href="#"><box-icon name='bar-chart-alt-2'></box-icon> Reportes</a> {# Ícono para reportes #}
-            <a href="#"><box-icon name='cog'></box-icon> Configuración</a> {# Ícono para configuración #}
-            <a href="#"><box-icon name='group'></box-icon> Usuarios</a> {# Ícono para usuarios #}
+{# Contenedor principal para el layout de sidebar y contenido #}
+<div class="d-flex" style="min-height: calc(100vh - 56px);"> {# Ajusta la altura para que ocupe el resto de la pantalla #}
+
+    <!-- Sidebar -->
+    <div class="sidebar bg-light p-3 shadow-sm" style="width: 250px; flex-shrink: 0;"> {# Estilos básicos para el sidebar #}
+        <img src="https://s3.amazonaws.com/blab-impact-published-production/jUes7SjKK5W76xyP9y2fuzkSpLVSOezp" alt="Logo" class="img-fluid mb-4">
+
+        <div class="mt-4 px-3">
+            <h6 class="text-muted">Módulos</h6>
+            {# Itera sobre 'modulos' (objetos Modulo de SQLAlchemy) #}
+            {% for modulo_item in modulos %} {# Cambiado a modulo_item para evitar conflicto con 'modulo' en modulo_detail #}
+                <a class="d-block ms-2 py-1 {% if modulo_actual and modulo_item.id == modulo_actual.id %}fw-bold text-primary{% endif %}"
+                   href="{{ url_for('ver_modulo', modulo_id=modulo_item.id) }}">
+                    <i class="bi bi-folder-fill me-2"></i> {{ modulo_item.nombre }}
+                </a>
+            {% else %}
+                <span class="text-muted ms-2">Sin módulos</span>
+            {% endfor %}
         </div>
 
-        <div class="content">
-            {% block content %}
-            {# Aquí es donde se inyectará el contenido específico de cada página #}
-            {% endblock %}
-        </div>
+        <hr class="my-3">
 
-    </div> {# Cierre del div d-flex #}
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="#"><i class="bi bi-graph-up me-2"></i> Reportes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="#"><i class="bi bi-gear-fill me-2"></i> Configuración</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="#"><i class="bi bi-people-fill me-2"></i> Usuarios</a>
+            </li>
+        </ul>
+    </div>
 
-    {# Scripts globales que deben cargarse al final del body #}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Contenido Principal -->
+    <div class="content flex-grow-1 p-4"> {# flex-grow-1 para que el contenido ocupe el espacio restante #}
+        {% block content %}
+        {# Aquí es donde se inyectará el contenido específico de cada página #}
+        {% endblock %}
+    </div>
 
-    {# Este bloque es para scripts específicos de cada página que extiende base.html #}
-    {% block scripts %}{% endblock %}
+</div> {# Cierre del div d-flex #}
 
-    {# Script para SweetAlert (si es global, puede ir aquí o en un archivo JS global) #}
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    Swal.fire({
-                        icon: '{{ 'success' if category == 'success' else 'error' }}',
-                        title: '{{ 'Éxito' if category == 'success' else 'Error' }}',
-                        text: '{{ message }}',
-                        timer: 3000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    });
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    });
-    </script>
+{# Scripts globales que deben cargarse al final del body #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{# Script para SweetAlert (global para todos los mensajes flash) #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                Swal.fire({
+                    icon: '{{ category if category in ["success", "error", "warning", "info"] else "info" }}', {# Asegura que el icono sea válido #}
+                    title: '{{ message | safe }}', {# Usar | safe para permitir HTML básico si lo hay, aunque no se recomienda para mensajes flash #}
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+});
+</script>
+
+{# Este bloque es para scripts específicos de cada página que extiende base.html #}
+{% block scripts %}{% endblock %}
 
 </body>
 </html>

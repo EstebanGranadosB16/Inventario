@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Detalles del Módulo</title> {# Título más descriptivo #}
+</head>
+<body>
+   {% extends 'base.html' %} {# Asegúrate de tener un base.html #}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- CAMBIO: url_for('dashboard') para volver al dashboard principal -->
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mb-3">
+        <box-icon name='arrow-back' color='#ffffff' size="18px"></box-icon> Volver a Módulos
+    </a>
+    <h2 class="mb-4">Módulo: {{ modulo.nombre }}</h2> {# Usar modulo.nombre #}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {# Contenedor superior: Botón Agregar, Buscar y Filtros #}
+    <div class="card mb-4"> {# Encierra todo el contenido superior en una sola tarjeta #}
+        <div class="card-body">
+            <div class="row align-items-center mb-3"> {# Fila para el botón y la búsqueda/filtros #}
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Agregar un nuevo equipo
+                    </button>
+                </div>
+                <div class="col-md-8">
+                    <div class="row g-2">
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-select" id="tipoFilter">
+                                <option value="" selected>Todos los tipos</option> {# Valor vacío para "Todos" #}
+                                {% for tipo in tipos_disponibles %}
+                                    <option value="{{ tipo }}">{{ tipo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-select" id="marcaFilter">
+                                <option value="" selected>Todas las marcas</option> {# Valor vacío para "Todas" #}
+                                {% for marca in marcas_disponibles %}
+                                    <option value="{{ marca }}">{{ marca }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-select" id="ramFilter">
+                                <option value="" selected>Toda la RAM</option> {# Valor vacío para "Toda" #}
+                                {% for ram in rams_disponibles %}
+                                    <option value="{{ ram }}">{{ ram }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-select" id="almacenamientoFilter">
+                                <option value="" selected>Todo el almacenamiento</option> {# Valor vacío para "Todo" #}
+                                {% for alm in almacenamientos_disponibles %}
+                                    <option value="{{ alm }}">{{ alm }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr> {# La línea divisoria puede ir aquí para separar la sección superior de las inferiores #}
+
+    {# Contenedores inferiores: Resumen y Tabla de Equipos #}
+    <div class="row">
+        {# Columna para el Resumen del Módulo (ej. 4 columnas de ancho en escritorio) #}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100"> {# h-100 para que ocupe toda la altura disponible en su columna #}
+                <div class="card-header">
+                    <h5 class="card-title">Resumen del Módulo</h5> {# Aquí se aplicarán los estilos del h5 dentro del card-header #}
+                </div>
+                <div class="card-body"> {# Usar card-body en lugar de Resumen_equipos #}
+                    <p>Total de equipos: <strong>{{ total_equipos }}</strong></p>
+                    <h6>Conteo por Tipo:</h6>
+                    <ul>
+                        {% for tipo, count in conteo_tipos.items() %}
+                            <li>{{ tipo }}: {{ count }}</li>
+                        {% else %}
+                            <li>Sin tipos registrados.</li>
+                        {% endfor %}
+                    </ul>
+                    <h6>Conteo por Marca:</h6>
+                    <ul>
+                        {% for marca, count in conteo_marcas.items() %}
+                            <li>{{ marca }}: {{ count }}</li>
+                        {% else %}
+                            <li>Sin marcas registradas.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {# Columna para la Tabla de Equipos (ej. 8 columnas de ancho en escritorio) #}
+        <div class="col-md-8 mb-4">
+            <div class="card h-100"> {# h-100 para que ocupe toda la altura disponible en su columna #}
+                <div class="card-header">
+                    <h3>Equipos en este Módulo</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="equiposTable"> {# Añadido ID para JS #}
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tipo</th>
+                                    <th>Serial</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Comentario</th>
+                                    <th>Procesador</th>
+                                    <th>Almacenamiento</th>
+                                    <th>RAM</th>
+                                    <th>Código</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipo in equipos %}
+                                <tr class="equipo-row"
+                                    data-tipo="{{ equipo.tipo | default('') }}"
+                                    data-serial="{{ equipo.serial | default('') }}"
+                                    data-marca="{{ equipo.marca | default('') }}"
+                                    data-modelo="{{ equipo.modelo | default('') }}"
+                                    data-comentario="{{ equipo.comentario | default('') }}"
+                                    data-procesador="{{ equipo.procesador | default('') }}"
+                                    data-almacenamiento="{{ equipo.almacenamiento | default('') }}"
+                                    data-ram="{{ equipo.ram | default('') }}"
+                                    data-codigo="{{ equipo.codigo | default('') }}">
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ equipo.tipo | default('N/A') }}</td>
+                                    <td>{{ equipo.serial | default('N/A') }}</td>
+                                    <td>{{ equipo.marca | default('N/A') }}</td>
+                                    <td>{{ equipo.modelo | default('N/A') }}</td>
+                                    <td>{{ equipo.comentario | default('N/A') }}</td>
+                                    <td>{{ equipo.procesador | default('N/A') }}</td>
+                                    <td>{{ equipo.almacenamiento | default('N/A') }}</td>
+                                    <td>{{ equipo.ram | default('N/A') }}</td>
+                                    <td>{{ equipo.codigo | default('N/A') }}</td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-sm btn-info edit-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#editEquipoModal"
+                                                    data-equipo-id="{{ equipo.id }}"
+                                                    data-tipo="{{ equipo.tipo | default('') }}"
+                                                    data-serial="{{ equipo.serial | default('') }}"
+                                                    data-marca="{{ equipo.marca | default('') }}"
+                                                    data-modelo="{{ equipo.modelo | default('') }}"
+                                                    data-comentario="{{ equipo.comentario | default('') }}"
+                                                    data-procesador="{{ equipo.procesador | default('') }}"
+                                                    data-almacenamiento="{{ equipo.almacenamiento | default('') }}"
+                                                    data-ram="{{ equipo.ram | default('') }}"
+                                                    data-codigo="{{ equipo.codigo | default('') }}">
+                                                <i class="bi bi-pencil-square"></i> Editar
+                                            </button>
+                                            <form action="{{ url_for('eliminar_equipo', modulo_id=modulo.id, equipo_id=equipo.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este equipo?')">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="11" class="text-center">No hay equipos registrados en este módulo.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noResultsMessage" class="alert alert-info text-center" style="display:none;">
+                        No hay equipos registrados en este módulo o no coinciden con los filtros.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# MODAL PARA AGREGAR NUEVO EQUIPO #}
+    <div class="modal fade" id="addEquipoModal" tabindex="-1" aria-labelledby="addEquipoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- CAMBIO: action apunta a la ruta correcta para agregar equipo -->
+                <form action="{{ url_for('agregar_equipo', modulo_id=modulo.id) }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEquipoModalLabel">Agregar Nuevo Equipo a {{ modulo.nombre }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="tipo" class="form-label">Tipo</label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="">Selecciona un tipo</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Laptop">Laptop</option> {# Añadido Laptop #}
+                                    <option value="All-in-One">All-in-One</option>
+                                    <option value="Servidor">Servidor</option> {# Añadido Servidor #}
+                                    <option value="Monitor">Monitor</option> {# Añadido Monitor #}
+                                    <option value="Impresora">Impresora</option> {# Añadido Impresora #}
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="serial" class="form-label">Serial</label>
+                                <input type="text" class="form-control" id="serial" name="serial" required placeholder="Ej: ABC123DEF456">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="marca" class="form-label">Marca</label>
+                                <input type="text" class="form-control" id="marca" name="marca" placeholder="Ej: Dell">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modelo" class="form-label">Modelo</label>
+                                <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Ej: OptiPlex 3080">
+                            </div>
+                            <div class="col-md-8">
+                                <label for="comentario" class="form-label">Comentario</label>
+                                <textarea class="form-control" id="comentario" name="comentario" rows="2" placeholder="Notas adicionales sobre el equipo..."></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="procesador" class="form-label">Procesador</label>
+                                <select class="form-select" id="procesador" name="procesador">
+                                    <option value="">Selecciona un procesador</option>
+                                    <optgroup label="Intel">
+                                        <option value="Intel Core i3">Intel Core i3</option>
+                                        <option value="Intel Core i5">Intel Core i5</option>
+                                        <option value="Intel Core i7">Intel Core i7</option>
+                                        <option value="Intel Core i9">Intel Core i9</option>
+                                        <option value="Intel Xeon">Intel Xeon</option>
+                                        <option value="Intel Celeron">Intel Celeron</option>
+                                        <option value="Intel Pentium">Intel Pentium</option>
+                                    </optgroup>
+                                    <optgroup label="AMD">
+                                        <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+                                        <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                                        <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                                        <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                                        <option value="AMD Threadripper">AMD Threadripper</option>
+                                        <option value="AMD Athlon">AMD Athlon</option>
+                                    </optgroup>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="generacion_procesador" class="form-label">Generación Procesador</label>
+                                <select class="form-select" id="generacion_procesador" name="generacion_procesador">
+                                    <option value="">Selecciona la generación</option>
+                                    {% for i in range(2, 16) %}
+                                        <option value="{{ i }}ª Gen">{{ i }}ª Gen</option>
+                                    {% endfor %}
+                                    <option value="Sin especificar">Sin especificar</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="almacenamiento" class="form-label">Almacenamiento</label>
+                                <select class="form-select" id="almacenamiento" name="almacenamiento">
+                                    <option value="">Selecciona almacenamiento</option>
+                                    <optgroup label="HDD">
+                                        <option value="HDD 500GB">HDD 500GB</option>
+                                        <option value="HDD 1TB">HDD 1TB</option>
+                                        <option value="HDD 2TB">HDD 2TB</option>
+                                        <option value="HDD 4TB+">HDD 4TB+</option>
+                                    </optgroup>
+                                    <optgroup label="SSD">
+                                        <option value="SSD 128GB">SSD 128GB</option>
+                                        <option value="SSD 256GB">SSD 256GB</option>
+                                        <option value="SSD 512GB">SSD 512GB</option>
+                                        <option value="SSD 1TB">SSD 1TB</option>
+                                        <option value="SSD 2TB+">SSD 2TB+</option>
+                                    </optgroup>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="ram" class="form-label">RAM</label>
+                                <select class="form-select" id="ram" name="ram">
+                                    <option value="">Selecciona RAM</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="16GB">16GB</option>
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB+">64GB+</option>
+                                    <option value="Otro">Otro</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="codigo" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Ej: ABC-XYZ-123">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Añadir Equipo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# MODAL PARA EDITAR EQUIPO (único modal para todos los equipos) #}
+    <div class="modal fade" id="editEquipoModal" tabindex="-1" aria-labelledby="editEquipoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- La acción del formulario se actualizará con JS cuando se abra el modal -->
+                <form id="editEquipoForm" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editEquipoModalLabel">Editar Equipo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="editTipo" class="form-label">Tipo</label>
+                                <select class="form-select" id="editTipo" name="tipo">
+                                    <option value="">Selecciona un tipo</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="All-in-One">All-in-One</option>
+                                    <option value="Servidor">Servidor</option>
+                                    <option value="Monitor">Monitor</option>
+                                    <option value="Impresora">Impresora</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editSerial" class="form-label">Serial</label>
+                                <input type="text" class="form-control" id="editSerial" name="serial" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editMarca" class="form-label">Marca</label>
+                                <input type="text" class="form-control" id="editMarca" name="marca">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editModelo" class="form-label">Modelo</label>
+                                <input type="text" class="form-control" id="editModelo" name="modelo">
+                            </div>
+                            <div class="col-md-8">
+                                <label for="editComentario" class="form-label">Comentario</label>
+                                <textarea class="form-control" id="editComentario" name="comentario" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editProcesador" class="form-label">Procesador</label>
+                                <select class="form-select" id="editProcesador" name="procesador">
+                                    <option value="">Selecciona un procesador</option>
+                                    <optgroup label="Intel">
+                                        <option value="Intel Core i3">Intel Core i3</option>
+                                        <option value="Intel Core i5">Intel Core i5</option>
+                                        <option value="Intel Core i7">Intel Core i7</option>
+                                        <option value="Intel Core i9">Intel Core i9</option>
+                                        <option value="Intel Xeon">Intel Xeon</option>
+                                        <option value="Intel Celeron">Intel Celeron</option>
+                                        <option value="Intel Pentium">Intel Pentium</option>
+                                    </optgroup>
+                                    <optgroup label="AMD">
+                                        <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+                                        <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                                        <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                                        <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                                        <option value="AMD Threadripper">AMD Threadripper</option>
+                                        <option value="AMD Athlon">AMD Athlon</option>
+                                    </optgroup>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editGeneracionProcesador" class="form-label">Generación Procesador</label>
+                                <select class="form-select" id="editGeneracionProcesador" name="generacion_procesador">
+                                    <option value="">Selecciona la generación</option>
+                                    {% for i in range(2, 16) %}
+                                        <option value="{{ i }}ª Gen">{{ i }}ª Gen</option>
+                                    {% endfor %}
+                                    <option value="Sin especificar">Sin especificar</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editAlmacenamiento" class="form-label">Almacenamiento</label>
+                                <select class="form-select" id="editAlmacenamiento" name="almacenamiento">
+                                    <option value="">Selecciona almacenamiento</option>
+                                    <optgroup label="HDD">
+                                        <option value="HDD 500GB">HDD 500GB</option>
+                                        <option value="HDD 1TB">HDD 1TB</option>
+                                        <option value="HDD 2TB">HDD 2TB</option>
+                                        <option value="HDD 4TB+">HDD 4TB+</option>
+                                    </optgroup>
+                                    <optgroup label="SSD">
+                                        <option value="SSD 128GB">SSD 128GB</option>
+                                        <option value="SSD 256GB">SSD 256GB</option>
+                                        <option value="SSD 512GB">SSD 512GB</option>
+                                        <option value="SSD 1TB">SSD 1TB</option>
+                                        <option value="SSD 2TB+">SSD 2TB+</option>
+                                    </optgroup>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editRam" class="form-label">RAM</label>
+                                <select class="form-select" id="editRam" name="ram">
+                                    <option value="">Selecciona RAM</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="16GB">16GB</option>
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB+">64GB+</option>
+                                    <option value="Otro">Otro</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="editCodigo" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="editCodigo" name="codigo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# Script para manejar la lógica de los modales y el filtrado #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const tipoFilter = document.getElementById('tipoFilter');
+            const marcaFilter = document.getElementById('marcaFilter');
+            const ramFilter = document.getElementById('ramFilter');
+            const almacenamientoFilter = document.getElementById('almacenamientoFilter');
+            const equiposTableBody = document.querySelector('#equiposTable tbody');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            const editEquipoModal = document.getElementById('editEquipoModal');
+            const editEquipoForm = document.getElementById('editEquipoForm');
+
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedTipo = tipoFilter.value;
+                const selectedMarca = marcaFilter.value;
+                const selectedRam = ramFilter.value;
+                const selectedAlmacenamiento = almacenamientoFilter.value;
+                let visibleRowCount = 0;
+
+                document.querySelectorAll('.equipo-row').forEach(row => {
+                    const tipo = row.dataset.tipo.toLowerCase();
+                    const serial = row.dataset.serial.toLowerCase();
+                    const marca = row.dataset.marca.toLowerCase();
+                    const modelo = row.dataset.modelo.toLowerCase();
+                    const procesador = row.dataset.procesador.toLowerCase();
+                    const ram = row.dataset.ram.toLowerCase();
+                    const almacenamiento = row.dataset.almacenamiento.toLowerCase();
+                    const codigo = row.dataset.codigo.toLowerCase();
+
+                    const matchesSearch = (
+                        tipo.includes(searchTerm) ||
+                        serial.includes(searchTerm) ||
+                        marca.includes(searchTerm) ||
+                        modelo.includes(searchTerm) ||
+                        procesador.includes(searchTerm) ||
+                        ram.includes(searchTerm) ||
+                        almacenamiento.includes(searchTerm) ||
+                        codigo.includes(searchTerm)
+                    );
+
+                    const matchesTipo = selectedTipo === '' || tipo.includes(selectedTipo.toLowerCase());
+                    const matchesMarca = selectedMarca === '' || marca.includes(selectedMarca.toLowerCase());
+                    const matchesRam = selectedRam === '' || ram.includes(selectedRam.toLowerCase());
+                    const matchesAlmacenamiento = selectedAlmacenamiento === '' || almacenamiento.includes(selectedAlmacenamiento.toLowerCase());
+
+                    if (matchesSearch && matchesTipo && matchesMarca && matchesRam && matchesAlmacenamiento) {
+                        row.style.display = '';
+                        visibleRowCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (visibleRowCount === 0) {
+                    noResultsMessage.style.display = 'block';
+                } else {
+                    noResultsMessage.style.display = 'none';
+                }
+            }
+
+            searchInput.addEventListener('keyup', filterTable);
+            tipoFilter.addEventListener('change', filterTable);
+            marcaFilter.addEventListener('change', filterTable);
+            ramFilter.addEventListener('change', filterTable);
+            almacenamientoFilter.addEventListener('change', filterTable);
+
+            // Manejar la apertura del modal de edición
+            editEquipoModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget; // Botón que disparó el modal
+                const equipoId = button.dataset.equipoId;
+                const tipo = button.dataset.tipo;
+                const serial = button.dataset.serial;
+                const marca = button.dataset.marca;
+                const modelo = button.dataset.modelo;
+                const comentario = button.dataset.comentario;
+                const procesador = button.dataset.procesador;
+                const almacenamiento = button.dataset.almacenamiento;
+                const ram = button.dataset.ram;
+                const codigo = button.dataset.codigo;
+
+                // Actualizar la acción del formulario
+                editEquipoForm.action = `{{ url_for('editar_equipo', modulo_id=modulo.id, equipo_id=0) }}`.replace('0', equipoId);
+
+                // Llenar los campos del formulario con los datos del equipo
+                document.getElementById('editTipo').value = tipo;
+                document.getElementById('editSerial').value = serial;
+                document.getElementById('editMarca').value = marca;
+                document.getElementById('editModelo').value = modelo;
+                document.getElementById('editComentario').value = comentario;
+                document.getElementById('editProcesador').value = procesador;
+                document.getElementById('editAlmacenamiento').value = almacenamiento;
+                document.getElementById('editRam').value = ram;
+                document.getElementById('editCodigo').value = codigo;
+            });
+
+            // Llamar a filterTable al cargar la página para asegurar el estado inicial
+            filterTable();
+        });
+    </script>
+{% endblock %} {# <-- ¡AHORA ESTÁ EN EL LUGAR CORRECTO! #}
+</body>
+</html>
