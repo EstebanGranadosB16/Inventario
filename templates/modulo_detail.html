@@ -171,12 +171,6 @@
                                     <option value="">Selecciona un tipo</option>
                                     <option value="Desktop">Desktop</option>
                                     <option value="All-in-One">All-in-One</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Monitor">Monitor</option>
-                                    <option value="Impresora">Impresora</option>
-                                    <option value="Servidor">Servidor</option>
-                                    <option value="Switch">Switch</option>
-                                    <option value="Router">Router</option>
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
@@ -297,12 +291,6 @@
                                     <option value="">Selecciona un tipo</option>
                                     <option value="Desktop" {% if equipo.get('tipo') == 'Desktop' %}selected{% endif %}>Desktop</option>
                                     <option value="All-in-One" {% if equipo.get('tipo') == 'All-in-One' %}selected{% endif %}>All-in-One</option>
-                                    <option value="Laptop" {% if equipo.get('tipo') == 'Laptop' %}selected{% endif %}>Laptop</option>
-                                    <option value="Monitor" {% if equipo.get('tipo') == 'Monitor' %}selected{% endif %}>Monitor</option>
-                                    <option value="Impresora" {% if equipo.get('tipo') == 'Impresora' %}selected{% endif %}>Impresora</option>
-                                    <option value="Servidor" {% if equipo.get('tipo') == 'Servidor' %}selected{% endif %}>Servidor</option>
-                                    <option value="Switch" {% if equipo.get('tipo') == 'Switch' %}selected{% endif %}>Switch</option>
-                                    <option value="Router" {% if equipo.get('router') == 'Router' %}selected{% endif %}>Router</option>
                                     <option value="Otro" {% if equipo.get('tipo') == 'Otro' %}selected{% endif %}>Otro</option>
                                 </select>
                             </div>
